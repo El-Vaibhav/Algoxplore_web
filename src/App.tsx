@@ -11,6 +11,9 @@ import NotFound from "./pages/NotFound.tsx";
 import GraphComparePage from "./pages/GraphComparePage";
 import SortingComparePage from "./pages/SortingComparePage";
 import SchedulingComparePage from "./pages/SchedulingComparePage.tsx";
+import TreePage from "@/pages/TreePage";
+import SearchPage from "@/pages/SearchPage";
+import DPPage from "@/pages/DPPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +31,9 @@ const App = () => (
           <Route path="/graph-compare" element={<GraphComparePage />} />
           <Route path="/sorting-compare" element={<SortingComparePage />} />
           <Route path="/scheduling-compare" element={<SchedulingComparePage />} />
+          <Route path="/trees" element={<TreePage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/dp" element={<DPPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

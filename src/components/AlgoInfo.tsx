@@ -3,13 +3,16 @@ interface AlgoInfoProps {
   explanation: string;
   timeComplexity: { best: string; average: string; worst: string };
   code?: string;
-  accentColor?: "graph" | "sorting" | "scheduling";
+  accentColor?: "graph" | "sorting" | "scheduling" | "tree" |"search" |"dp";
 }
 
 const accentMap = {
   graph: "text-graph",
   sorting: "text-sorting",
   scheduling: "text-scheduling",
+  tree: "text-tree",
+  search: "text-search",
+  dp: "text-dp",
 };
 
 const AlgoInfo = ({ name, explanation, timeComplexity, code, accentColor = "graph" }: AlgoInfoProps) => {

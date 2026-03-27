@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, GitBranch, BarChart3, Clock } from "lucide-react";
+import { ArrowRight, GitBranch, BarChart3, Clock, TreeDeciduous , Search, Brain} from "lucide-react";
 
 const categories = [
   {
@@ -42,6 +42,45 @@ const categories = [
     tagBg: "bg-scheduling/10 text-scheduling",
     tags: ["FCFS", "SJF", "Round Robin", "Priority"],
   },
+  {
+  title: "Tree Algorithms",
+  description: "Learn Binary Search Trees, AVL Trees, and tree traversals through visual animations",
+  path: "/trees",
+  icon: TreeDeciduous,
+  colorClass: "text-tree",
+  bgGlow: "box-glow-tree",
+  borderHover: "hover:border-tree/50",
+  gradient: "from-tree/15 via-tree/5 to-transparent",
+  iconBg: "bg-tree/10 border-tree/20",
+  tagBg: "bg-tree/10 text-tree",
+  tags: ["BST", "AVL", "Inorder", "Preorder"],
+},
+{
+  title: "Search Algorithms",
+  description: "Visualize Binary Search, A* pathfinding and AO* algorithm step-by-step",
+  path: "/search",
+  icon: Search,
+  colorClass: "text-search",
+  bgGlow: "box-glow-search",
+  borderHover: "hover:border-search/50",
+  gradient: "from-search/15 via-search/5 to-transparent",
+  iconBg: "bg-search/10 border-search/20",
+  tagBg: "bg-search/10 text-search",
+  tags: ["Binary Search", "A*", "AO*"],
+},
+{
+  title: "Dynamic Programming",
+  description: "Understand DP concepts like Knapsack, LCS and Coin Change through step-by-step table visualization",
+  path: "/dp",
+  icon: Brain,
+  colorClass: "text-dp",
+  bgGlow: "box-glow-dp",
+  borderHover: "hover:border-dp/50",
+  gradient: "from-dp/15 via-dp/5 to-transparent",
+  iconBg: "bg-dp/10 border-dp/20",
+  tagBg: "bg-dp/10 text-dp",
+  tags: ["Knapsack", "LCS", "Coin Change"],
+},
 ];
 
 const Index = () => {
@@ -106,7 +145,7 @@ const Index = () => {
 
       {/* Categories */}
       <section className="container mx-auto px-6 pb-28 -mt-4">
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((cat, i) => {
             const Icon = cat.icon;
             return (

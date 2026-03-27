@@ -49,11 +49,17 @@
     --graph: 174 72% 50%;
     --sorting: 33 100% 60%;
     --scheduling: 262 83% 65%;
+    --tree: 142 76% 46%;
+    --search: 210 100% 60%;
+    --dp: 110 90% 60%;
 
     /* Semantic tokens */
     --glow: 174 72% 50%;
     --warning: 45 93% 58%;
     --success: 142 76% 46%;
+    --tree-glow: 142 76% 46%;
+    --dp-glow: 142 76% 46%;
+    --search-glow: 142 76% 46%;
     --info: 199 89% 48%;
   }
 }
@@ -85,6 +91,20 @@
     text-shadow: 0 0 20px hsl(var(--scheduling) / 0.5), 0 0 40px hsl(var(--scheduling) / 0.2);
   }
 
+  .text-glow-tree {
+    text-shadow: 0 0 20px hsl(var(--tree) / 0.5), 0 0 40px hsl(var(--tree) / 0.2);
+  }
+
+  .text-glow-search {
+    text-shadow: 0 0 20px hsl(var(--search) / 0.5), 0 0 40px hsl(var(--search) / 0.2);
+  }
+
+  .text-glow-dp {
+    text-shadow: 0 0 20px hsl(var(--dp) / 0.5), 0 0 40px hsl(var(--dp) / 0.2);
+  }
+  
+
+
   .box-glow {
     box-shadow: 0 0 20px hsl(var(--primary) / 0.15), 0 0 60px hsl(var(--primary) / 0.05);
   }
@@ -99,6 +119,17 @@
 
   .box-glow-scheduling {
     box-shadow: 0 0 25px hsl(var(--scheduling) / 0.2), 0 0 60px hsl(var(--scheduling) / 0.08);
+  }
+
+  .box-glow-tree {
+    box-shadow: 0 0 25px hsl(var(--tree) / 0.2), 0 0 60px hsl(var(--tree) / 0.08);
+  }
+
+  .box-glow-search {
+    box-shadow: 0 0 25px hsl(var(--search) / 0.2), 0 0 60px hsl(var(--search) / 0.08);
+  }
+  .box-glow-dp {
+    box-shadow: 0 0 25px hsl(var(--dp) / 0.2), 0 0 60px hsl(var(--dp) / 0.08);
   }
 
   .gradient-border {
@@ -134,6 +165,7 @@
     transform: scaleX(0);
     transform-origin: left;
   }
+
   100% {
     opacity: 1;
     transform: scaleX(1);

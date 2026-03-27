@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { ReactNode } from "react";
-import { GitBranch, BarChart3, Clock, Home, Shuffle } from "lucide-react";
-
+import { GitBranch, BarChart3, Clock, Home, Shuffle, TreeDeciduous, Search, Brain} from "lucide-react";
 interface AlgoLayoutProps {
   title: string;
   children: ReactNode;
@@ -11,6 +10,9 @@ const navItems = [
   { path: "/graph", label: "Graph", icon: GitBranch, colorClass: "text-graph" },
   { path: "/sorting", label: "Sorting", icon: BarChart3, colorClass: "text-sorting" },
   { path: "/scheduling", label: "Scheduling", icon: Clock, colorClass: "text-scheduling" },
+  { path: "/trees", label: "Trees", icon: TreeDeciduous, colorClass: "text-tree" },
+  { path: "/search", label: "Search", icon: Search, colorClass: "text-search" },
+  { path: "/dp", label: "Dynamic Programming", icon: Brain, colorClass: "text-dp" },
 ];
 
 const AlgoLayout = ({ title, children }: AlgoLayoutProps) => {
@@ -25,6 +27,9 @@ const AlgoLayout = ({ title, children }: AlgoLayoutProps) => {
   } else if (location.pathname.startsWith("/scheduling")) {
     comparePath = "/scheduling-compare";
   }
+  else if (location.pathname.startsWith("/trees")) {
+    comparePath = "/tree-compare";
+  }
 
   const currentNav = navItems.find((n) => location.pathname.startsWith(n.path));
   const accentClass = currentNav?.colorClass ?? "text-primary";
@@ -33,11 +38,11 @@ const AlgoLayout = ({ title, children }: AlgoLayoutProps) => {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-6 py-3 flex items-center justify-between">
-          
+
           {/* Logo */}
           <Link to="/" className="text-xl font-bold flex items-center">
-  <span>Algo</span><span className={accentClass}>Xplore</span>
-</Link>
+            <span>Algo</span><span className={accentClass}>Xplore</span>
+          </Link>
 
           {/* Navigation */}
           <nav className="hidden sm:flex items-center gap-1">
@@ -50,11 +55,10 @@ const AlgoLayout = ({ title, children }: AlgoLayoutProps) => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                    isActive
-                      ? `bg-secondary ${item.colorClass} font-medium`
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors ${isActive
+                    ? `bg-secondary ${item.colorClass} font-medium`
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                    }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
                   {item.label}
@@ -62,18 +66,19 @@ const AlgoLayout = ({ title, children }: AlgoLayoutProps) => {
               );
             })}
 
-            {/* Compare Button */}
-            <Link
-              to={comparePath}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                location.pathname.includes("compare")
-                  ? "bg-secondary text-accent font-medium"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-              }`}
-            >
-              <Shuffle className="w-3.5 h-3.5" />
-              Compare
-            </Link>
+            {/* Compare Button (not for Trees) */}
+            {!location.pathname.startsWith("/trees") && !location.pathname.startsWith("/search") && !location.pathname.startsWith("/dp") &&(
+              <Link
+                to={comparePath}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors ${location.pathname.includes("compare")
+                    ? "bg-secondary text-accent font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`}
+              >
+                <Shuffle className="w-3.5 h-3.5" />
+                Compare
+              </Link>
+            )}
 
           </nav>
 
