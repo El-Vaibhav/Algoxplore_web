@@ -69,8 +69,8 @@ const categories = [
   tags: ["Binary Search", "A*", "AO*"],
 },
 {
-  title: "Dynamic Programming",
-  description: "Understand DP concepts like Knapsack, LCS and Coin Change through step-by-step table visualization",
+  title: "Dynamic Programming & Backtracking",
+  description: "Understand DP and Backtracking concepts like Knapsack, LCS and NQueens through step-by-step table visualization",
   path: "/dp",
   icon: Brain,
   colorClass: "text-dp",
@@ -79,7 +79,7 @@ const categories = [
   gradient: "from-dp/15 via-dp/5 to-transparent",
   iconBg: "bg-dp/10 border-dp/20",
   tagBg: "bg-dp/10 text-dp",
-  tags: ["Knapsack", "LCS", "Coin Change"],
+  tags: ["Knapsack", "LCS", "NQueens", "Rat In a Maze"],
 },
 ];
 

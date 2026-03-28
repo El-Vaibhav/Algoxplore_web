@@ -5,6 +5,7 @@ import TreeCanvas from "@/components/TreeCanvas";
 import SpeedControl from "@/components/SpeedControl";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { heapConstructionSteps } from "@/lib/treeAlgorithms";
 import {
   TreeNode,
   AnimationStep,
@@ -22,7 +23,7 @@ import {
 } from "@/lib/treeAlgorithms";
 import { Play, Pause, RotateCcw, Plus, Search, Trash2, TreeDeciduous } from "lucide-react";
 
-type AlgoType = "bst-insert" | "bst-search" | "bst-delete" | "in-order" | "pre-order" | "post-order" | "avl-insert";
+type AlgoType = "bst-insert" | "bst-search" | "bst-delete" | "in-order" | "pre-order" | "post-order" | "avl-insert" | "min-heap" | "max-heap";
 
 function generateRandomTree(size = 11): number[] {
   const values: number[] = [];
@@ -46,7 +47,9 @@ const algorithms: { key: AlgoType; label: string; group: string }[] = [
   { key: "in-order", label: "In-Order", group: "Traversal" },
   { key: "pre-order", label: "Pre-Order", group: "Traversal" },
   { key: "post-order", label: "Post-Order", group: "Traversal" },
-  { key: "avl-insert", label: "AVL Construction", group: "AVL" }, ,
+  { key: "avl-insert", label: "AVL Construction", group: "AVL" },
+  { key: "min-heap", label: "Min Heap", group: "Heap" },
+  { key: "max-heap", label: "Max Heap", group: "Heap" }, 
 ];
 
 const algoInfo: Record<AlgoType, { name: string; explanation: string; timeComplexity: { best: string; average: string; worst: string }; code: string }> = {
@@ -91,6 +94,31 @@ const algoInfo: Record<AlgoType, { name: string; explanation: string; timeComple
     explanation: "Inserts into a self-balancing BST. After insertion, checks balance factors and performs rotations (LL, RR, LR, RL) to maintain O(log n) height.",
     timeComplexity: { best: "O(log n)", average: "O(log n)", worst: "O(log n)" },
     code: "avlInsert(node, val):\n  // BST insert\n  node = bstInsert(node, val)\n  balance = height(left) - height(right)\n  if balance > 1:  // Left-heavy\n    if val < left.val: rightRotate(node)  // LL\n    else: leftRotate(left), rightRotate(node)  // LR\n  if balance < -1:  // Right-heavy\n    if val > right.val: leftRotate(node)  // RR\n    else: rightRotate(right), leftRotate(node)  // RL",
+  },
+  "min-heap": {
+    name: "Min Heap Construction",
+    explanation:
+      "Builds a Min Heap from a binary tree using bottom-up heapify. Each parent node becomes smaller than its children.",
+    timeComplexity: {
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
+    },
+    code:
+      "for i = floor(n/2)-1 → 0:\n  heapify(i)\n\nheapify(i):\n  smallest = i\n  if left < smallest: smallest = left\n  if right < smallest: smallest = right\n  swap and recurse",
+  },
+
+  "max-heap": {
+    name: "Max Heap Construction",
+    explanation:
+      "Builds a Max Heap where each parent node is greater than its children using bottom-up heapify.",
+    timeComplexity: {
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
+    },
+    code:
+      "for i = floor(n/2)-1 → 0:\n  heapify(i)\n\nheapify(i):\n  largest = i\n  if left > largest: largest = left\n  if right > largest: largest = right\n  swap and recurse",
   },
 };
 
@@ -165,6 +193,27 @@ const TreePage = () => {
       case "avl-insert": {
 
         const result = avlConstructionSteps(tree);
+
+        newSteps = result.steps;
+
+        setTimeout(() => {
+          const t = result.tree;
+          if (t) assignPositions(t);
+          setTree(t);
+        }, newSteps.length * Math.max(100, 1100 - speed * 100) + 200);
+
+        break;
+      }
+      case "min-heap":
+      case "max-heap": {
+        const values = getAllValues(tree);
+
+        if (!values.length) return;
+
+        const result = heapConstructionSteps(
+          values,
+          selectedAlgo === "min-heap"
+        );
 
         newSteps = result.steps;
 

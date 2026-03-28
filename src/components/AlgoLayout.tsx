@@ -12,7 +12,7 @@ const navItems = [
   { path: "/scheduling", label: "Scheduling", icon: Clock, colorClass: "text-scheduling" },
   { path: "/trees", label: "Trees", icon: TreeDeciduous, colorClass: "text-tree" },
   { path: "/search", label: "Search", icon: Search, colorClass: "text-search" },
-  { path: "/dp", label: "Dynamic Programming", icon: Brain, colorClass: "text-dp" },
+  { path: "/dp", label: "Dynamic Programming & Backtracking", icon: Brain, colorClass: "text-dp" },
 ];
 
 const AlgoLayout = ({ title, children }: AlgoLayoutProps) => {

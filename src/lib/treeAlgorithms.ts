@@ -431,3 +431,71 @@ export function getAllValues(node: TreeNode | null): number[] {
   if (!node) return [];
   return [...getAllValues(node.left), node.value, ...getAllValues(node.right)];
 }
+
+
+// ===== HEAP CONSTRUCTION =====
+
+function heapify(arr: number[], n: number, i: number, isMin: boolean, steps: AnimationStep[], root: TreeNode | null) {
+  let extreme = i;
+  const left = 2 * i + 1;
+  const right = 2 * i + 2;
+
+  if (left < n) {
+    steps.push(makeStep(root, [arr[i], arr[left]], [], `Compare ${arr[i]} and ${arr[left]}`, []));
+    if (isMin ? arr[left] < arr[extreme] : arr[left] > arr[extreme]) {
+      extreme = left;
+    }
+  }
+
+  if (right < n) {
+    steps.push(makeStep(root, [arr[i], arr[right]], [], `Compare ${arr[i]} and ${arr[right]}`, []));
+    if (isMin ? arr[right] < arr[extreme] : arr[right] > arr[extreme]) {
+      extreme = right;
+    }
+  }
+
+  if (extreme !== i) {
+    steps.push(makeStep(root, [arr[i], arr[extreme]], [], `Swap ${arr[i]} and ${arr[extreme]}`, []));
+    [arr[i], arr[extreme]] = [arr[extreme], arr[i]];
+    heapify(arr, n, extreme, isMin, steps, root);
+  }
+}
+
+// Convert array → complete binary tree
+function buildTreeFromArray(arr: number[]): TreeNode | null {
+  if (!arr.length) return null;
+
+  const nodes: TreeNode[] = arr.map(v => ({
+    value: v,
+    left: null,
+    right: null,
+    x: 0,
+    y: 0,
+    height: 1,
+  }));
+
+  for (let i = 0; i < arr.length; i++) {
+    if (2 * i + 1 < arr.length) nodes[i].left = nodes[2 * i + 1];
+    if (2 * i + 2 < arr.length) nodes[i].right = nodes[2 * i + 2];
+  }
+
+  assignPositions(nodes[0]);
+  return nodes[0];
+}
+
+export function heapConstructionSteps(values: number[], isMin: boolean): { tree: TreeNode | null; steps: AnimationStep[] } {
+  const arr = [...values];
+  const steps: AnimationStep[] = [];
+
+  let tree = buildTreeFromArray(arr);
+
+  for (let i = Math.floor(arr.length / 2) - 1; i >= 0; i--) {
+    steps.push(makeStep(tree, [arr[i]], [], `Heapify at index ${i}`, []));
+    heapify(arr, arr.length, i, isMin, steps, tree);
+    tree = buildTreeFromArray(arr);
+  }
+
+  steps.push(makeStep(tree, [], [], `${isMin ? "Min Heap" : "Max Heap"} constructed`, []));
+
+  return { tree, steps };
+}

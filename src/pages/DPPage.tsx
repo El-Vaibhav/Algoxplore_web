@@ -2,28 +2,39 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import AlgoLayout from "@/components/AlgoLayout";
 import AlgoInfo from "@/components/AlgoInfo";
 import SpeedControl from "@/components/SpeedControl";
+import { generateRandomSudoku } from "@/lib/dpAlgorithms";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
+import SudokuInput from "@/components/dp/SudokuInput";
 import { Play, Pause, RotateCcw, Brain, Shuffle, PenLine } from "lucide-react";
 import {
   KnapsackStep, KnapsackItem, knapsackSteps,
   FractionalStep, fractionalKnapsackSteps,
   LCSStep, lcsSteps,
-  MCMStep, mcmSteps,
+  MCMStep, mcmSteps, nQueenSteps
 } from "@/lib/dpAlgorithms";
 import KnapsackViz from "@/components/dp/KnapsackViz";
 import FractionalKnapsackViz from "@/components/dp/FractionalKnapsackViz";
 import LCSViz from "@/components/dp/LCSViz";
 import MCMViz from "@/components/dp/MCMViz";
+import NQueenViz from "@/components/dp/NQueenViz";
+import { ratMazeSteps } from "@/lib/dpAlgorithms";
+import RatMazeViz from "@/components/dp/RatMazeViz";
+import MazeInput from "@/components/dp/MazeInput";
+import { sudokuSteps, defaultSudoku } from "@/lib/dpAlgorithms";
+import SudokuViz from "@/components/dp/SudokuViz";
 
-type AlgoType = "knapsack" | "fractional" | "lcs" | "mcm";
+type AlgoType = "knapsack" | "fractional" | "lcs" | "mcm" | "nqueen" | "ratmaze" | "sudoku";
 
 const algorithms: { key: AlgoType; label: string }[] = [
   { key: "knapsack", label: "0/1 Knapsack" },
   { key: "fractional", label: "Fractional Knapsack" },
   { key: "lcs", label: "LCS" },
   { key: "mcm", label: "Matrix Chain" },
+  { key: "nqueen", label: "N-Queens" },
+  { key: "ratmaze", label: "Rat in a Maze" },
+  { key: "sudoku", label: "Sudoku Solver" },
 ];
 
 const algoInfoMap: Record<AlgoType, { name: string; explanation: string; timeComplexity: { best: string; average: string; worst: string }; code: string }> = {
@@ -50,6 +61,54 @@ const algoInfoMap: Record<AlgoType, { name: string; explanation: string; timeCom
     explanation: "Find the optimal way to parenthesize a chain of matrices to minimize scalar multiplications. Uses interval DP: for each subchain length, try all split points and pick the one with minimum cost.",
     timeComplexity: { best: "O(n³)", average: "O(n³)", worst: "O(n³)" },
     code: "mcm(dims):\n  for len = 2 to n:\n    for i = 0 to n-len:\n      j = i + len - 1\n      dp[i][j] = INF\n      for k = i to j-1:\n        cost = dp[i][k] + dp[k+1][j]\n             + dims[i]*dims[k+1]*dims[j+1]\n        dp[i][j] = min(dp[i][j], cost)",
+  },
+  nqueen: {
+    name: "N-Queens (Backtracking)",
+    explanation:
+      "Place N queens on an N×N board such that no two queens attack each other. Uses backtracking to explore valid placements row by row.",
+    timeComplexity: {
+      best: "O(N!)",
+      average: "O(N!)",
+      worst: "O(N!)",
+    },
+    code:
+      "solve(row):\n for col in board:\n  if safe:\n   place queen\n   solve(row+1)\n   remove queen",
+  },
+  ratmaze: {
+    name: "Rat in a Maze",
+    explanation:
+      "Find a path from start (0,0) to end (n-1,n-1) in a grid. The rat can move in allowed directions and must avoid blocked cells. Uses backtracking to explore all possible paths.",
+    timeComplexity: {
+      best: "O(n²)",
+      average: "O(2^(n²))",
+      worst: "O(2^(n²))",
+    },
+    code:
+      "solve(x,y):\n if destination: return true\n if safe:\n  mark path\n  explore neighbors\n  if success return true\n  unmark (backtrack)",
+
+  },
+  sudoku: {
+    name: "Sudoku Solver (Backtracking)",
+    explanation:
+      "Solve a 9×9 Sudoku puzzle by filling empty cells such that each row, column, and 3×3 subgrid contains digits 1–9 exactly once. The algorithm uses backtracking: it tries numbers in empty cells, validates constraints, and backtracks when conflicts occur.",
+
+    timeComplexity: {
+      best: "O(1) (already solved)",
+      average: "O(9^(n²))",
+      worst: "O(9^(n²))",
+    },
+
+    code:
+      `solve():
+  for each cell:
+    if empty:
+      for num = 1 to 9:
+        if valid:
+          place num
+          if solve(): return true
+          remove num
+      return false
+  return true`,
   },
 };
 
@@ -97,6 +156,23 @@ function randomMCMDimensions(): number[] {
   return dims;
 }
 
+function generateRandomMaze(): number[][] {
+  // random size between 4 and 8
+  const size = 4 + Math.floor(Math.random() * 5);
+
+  const grid = Array.from({ length: size }, () =>
+    Array.from({ length: size }, () =>
+      Math.random() < 0.3 ? 0 : 1 // 30% walls
+    )
+  );
+
+  // ensure start & end are open
+  grid[0][0] = 1;
+  grid[size - 1][size - 1] = 1;
+
+  return grid;
+}
+
 // ---- Input panel component ----
 interface InputPanelProps {
   algo: AlgoType;
@@ -112,9 +188,17 @@ interface InputPanelProps {
   onLCSChange: (s1: string, s2: string) => void;
   onMCMChange: (dims: number[]) => void;
   disabled: boolean;
+  nQueenSize: number;
+  setNQueenSize: (n: number) => void;
+  maze: number[][];
+  setMaze: (m: number[][]) => void;
+  sudokuBoard: number[][];
+  setSudokuBoard: (b: number[][]) => void;
 }
 
-const InputPanel = ({ algo, knapsackItems, knapsackCapacity, fractionalItems, fractionalCapacity, lcsS1, lcsS2, mcmDims, onKnapsackChange, onFractionalChange, onLCSChange, onMCMChange, disabled }: InputPanelProps) => {
+const InputPanel = ({ algo, knapsackItems, knapsackCapacity, fractionalItems, fractionalCapacity, lcsS1, lcsS2, mcmDims, onKnapsackChange, onFractionalChange, onLCSChange, onMCMChange, disabled, nQueenSize,
+  setNQueenSize, maze, setMaze, sudokuBoard, setSudokuBoard,
+}: InputPanelProps) => {
   const [mcmInput, setMcmInput] = useState(mcmDims.join(","));
   const [mcmError, setMcmError] = useState("");
   const renderKnapsackInputs = (items: KnapsackItem[], cap: number, onChange: (items: KnapsackItem[], cap: number) => void) => (
@@ -306,6 +390,46 @@ const InputPanel = ({ algo, knapsackItems, knapsackCapacity, fractionalItems, fr
           </span>
         </div>
       )}
+      {algo === "nqueen" && (
+        <div className="space-y-2">
+
+          <span className="text-[10px] text-muted-foreground">
+            Board Size (N)
+          </span>
+
+          <Input
+            type="number"
+            value={nQueenSize}
+            min={1}
+            max={8}
+            disabled={disabled}
+            className="h-7 text-xs font-mono bg-secondary/50 border-border"
+
+            onChange={(e) => {
+              const val = parseInt(e.target.value);
+
+              if (!isNaN(val) && val >= 1 && val <= 8) {
+                setNQueenSize(val);
+              }
+            }}
+          />
+
+          <span className="text-[10px] text-muted-foreground/60">
+            {nQueenSize} × {nQueenSize} board
+          </span>
+
+        </div>
+      )}
+      {algo === "ratmaze" && (
+        <MazeInput maze={maze} setMaze={setMaze} disabled={disabled} />
+      )}
+      {algo === "sudoku" && (
+        <SudokuInput
+          board={sudokuBoard}
+          setBoard={setSudokuBoard}
+          disabled={disabled}
+        />
+      )}
     </div>
   );
 };
@@ -317,7 +441,13 @@ const DPPage = () => {
   const [currentStep, setCurrentStep] = useState(-1);
   const [isRunning, setIsRunning] = useState(false);
   const [speed, setSpeed] = useState(1);
+  const [nQueenSize, setNQueenSize] = useState(6);
+  const [sudokuSize, setSudokuSize] = useState(4);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [maze, setMaze] = useState<number[][]>(() => generateRandomMaze());
+  const [sudokuBoard, setSudokuBoard] = useState(() => {
+    return generateRandomSudoku(4);
+  });
 
   // Inputs state
   const [knapsackItems, setKnapsackItems] = useState<KnapsackItem[]>(() => randomKnapsackItems().items);
@@ -342,7 +472,35 @@ const DPPage = () => {
     setMcmDims(randomMCMDimensions());
   }, []);
 
-  const stepData = currentStep >= 0 && currentStep < steps.length ? steps[currentStep] : null;
+  const stepData =
+    currentStep >= 0 && currentStep < steps.length
+      ? steps[currentStep]
+      : algo === "ratmaze"
+        ? {
+          grid: maze,
+          path: Array.from({ length: maze.length }, () =>
+            Array(maze.length).fill(0)
+          ),
+          visited: Array.from({ length: maze.length }, () =>
+            Array(maze.length).fill(0)
+          ),
+          row: -1,
+          col: -1,
+          message: "Click Run to start",
+          done: false,
+        }
+        : algo === "sudoku"
+          ? {
+            board: sudokuBoard,
+            row: -1,
+            col: -1,
+            highlight: [],
+            conflict: [],
+            message: "Click Run to start",
+            done: false,
+          }
+          : null;
+
 
   const stopAnimation = useCallback(() => {
     setIsRunning(false);
@@ -351,11 +509,17 @@ const DPPage = () => {
 
 
   useEffect(() => {
-    if (!isRunning || currentStep >= steps.length - 1) {
+    if (
+      !isRunning ||
+      currentStep >= steps.length - 1 ||
+      steps[currentStep]?.done
+    ) {
       if (isRunning && currentStep >= steps.length - 1) setIsRunning(false);
       return;
     }
-    const delay = 600 * speed;
+    const delay = algo === "nqueen"
+      ? 100 * speed  // faster for backtracking
+      : 600 * speed;
     timerRef.current = setTimeout(() => setCurrentStep(s => s + 1), delay);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [isRunning, currentStep, steps.length, speed]);
@@ -367,6 +531,15 @@ const DPPage = () => {
       case "fractional": s = fractionalKnapsackSteps(fractionalItems, fractionalCap); break;
       case "lcs": s = lcsSteps(lcsS1, lcsS2); break;
       case "mcm": s = mcmSteps(mcmDims); break;
+      case "nqueen":
+        s = nQueenSteps(nQueenSize); // you can make this dynamic later
+        break;
+      case "ratmaze":
+        s = ratMazeSteps(maze);
+        break;
+      case "sudoku":
+        s = sudokuSteps(sudokuBoard);
+        break;
       default: s = [];
     }
     setSteps(s);
@@ -384,10 +557,26 @@ const DPPage = () => {
       case "fractional": { const r = randomFractionalItems(); setFractionalItems(r.items); setFractionalCap(r.capacity); break; }
       case "lcs": { const r = randomLCSStrings(); setLcsS1(r.s1); setLcsS2(r.s2); break; }
       case "mcm": { setMcmDims(randomMCMDimensions()); break; }
+      case "ratmaze": {
+        const newMaze = generateRandomMaze();
+        setMaze(newMaze);
+        setSteps([]);       // IMPORTANT
+        setCurrentStep(-1); // IMPORTANT
+        break;
+      }
+      case "sudoku": {
+        setSudokuSize(4);
+        setSudokuBoard(generateRandomSudoku(4));
+        break;
+      }
     }
   };
 
   const switchAlgo = (key: AlgoType) => {
+    if (key === "sudoku") {
+      setSudokuSize(4);
+      setSudokuBoard(generateRandomSudoku(4));
+    }
     stopAnimation();
     setSteps([]);
     setCurrentStep(-1);
@@ -473,6 +662,18 @@ const DPPage = () => {
                 }
               />
             )}
+            {algo === "nqueen" && (
+              <NQueenViz
+                stepData={stepData}
+                size={nQueenSize}
+              />
+            )}
+            {algo === "ratmaze" && (
+              <RatMazeViz stepData={stepData} />
+            )}
+            {algo === "sudoku" && (
+              <SudokuViz stepData={stepData} />
+            )}
           </div>
 
           <AlgoInfo name={info.name} explanation={info.explanation} timeComplexity={info.timeComplexity} code={info.code} accentColor="graph" />
@@ -502,6 +703,12 @@ const DPPage = () => {
             onLCSChange={(s1, s2) => { setLcsS1(s1); setLcsS2(s2); }}
             onMCMChange={setMcmDims}
             disabled={isAnimating}
+            nQueenSize={nQueenSize}
+            setNQueenSize={setNQueenSize}
+            maze={maze}
+            setMaze={setMaze}
+            sudokuBoard={sudokuBoard}
+            setSudokuBoard={setSudokuBoard}
           />
 
           <SpeedControl speed={speed} onSpeedChange={setSpeed} />
@@ -534,9 +741,32 @@ const DPPage = () => {
                     {algo === "fractional" && (stepData as FractionalStep).totalValue}
                     {algo === "lcs" && (stepData as LCSStep).lcs.length}
                     {algo === "mcm" && (stepData as MCMStep).table[0][(stepData as MCMStep).table.length - 1].toLocaleString()}
+                    {algo === "ratmaze" && stepData?.done && "Path Found"}
                   </div>
                 </div>
               )}
+              {/* ❌ NO PATH (OUTSIDE SUCCESS BLOCK) */}
+              {algo === "ratmaze" &&
+                steps.length > 0 &&
+                !steps.some(s => s.done) &&
+                !isRunning && (
+                  <div className="mt-3 p-2 bg-red-500/10 rounded-lg border border-red-400 text-center">
+                    <div className="text-sm text-red-400 font-mono">
+                      No Path Found ❌
+                    </div>
+                  </div>
+                )}
+              {/* ❌ NO SOLUTION (SUDOKU) */}
+              {algo === "sudoku" &&
+                steps.length > 0 &&
+                !steps.some(s => s.success === true) &&
+                !isRunning && (
+                  <div className="mt-3 p-2 bg-red-500/10 rounded-lg border border-red-400 text-center">
+                    <div className="text-sm text-red-400 font-mono">
+                      No Solution Exists ❌
+                    </div>
+                  </div>
+                )}
             </div>
           )}
         </div>
