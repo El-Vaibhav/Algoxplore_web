@@ -5,6 +5,7 @@ interface TreeCanvasProps {
   tree: TreeNode | null;
   highlighted: number[];
   comparing: number[];
+  swapping: number[];
   width?: number;
   height?: number;
 }
@@ -33,7 +34,7 @@ function getNodes(node: TreeNode | null): TreeNode[] {
   return [node, ...getNodes(node.left), ...getNodes(node.right)];
 }
 
-const TreeCanvas = ({ tree, highlighted, comparing, width = 800, height = 450 }: TreeCanvasProps) => {
+const TreeCanvas = ({ tree, highlighted, comparing, swapping, width = 800, height = 450 }: TreeCanvasProps) => {
   const edges = getEdges(tree);
   const nodes = getNodes(tree);
 
@@ -66,26 +67,34 @@ const TreeCanvas = ({ tree, highlighted, comparing, width = 800, height = 450 }:
       {nodes.map((n) => {
         const isHighlighted = highlighted.includes(n.value);
         const isComparing = comparing.includes(n.value);
+        const isSwapping = swapping.includes(n.value);
 
         return (
           <motion.g
             key={`node-${n.value}`}
             initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            animate={{
+              scale: isSwapping ? 1.2 : 1,
+              opacity: 1
+            }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             {/* Glow */}
-            {isHighlighted && (
+            {(isHighlighted || isSwapping) && (
               <motion.circle
                 cx={n.x}
                 cy={n.y}
                 r={26}
                 fill="none"
-                stroke="hsl(var(--tree))"
+                stroke={
+                  isSwapping
+                    ? "#ef4444" // 🔴 red glow
+                    : "hsl(var(--tree))"
+                }
                 strokeWidth={2}
                 opacity={0.4}
-                animate={{ r: [26, 32, 26], opacity: [0.4, 0.1, 0.4] }}
-                transition={{ duration: 1, repeat: Infinity }}
+                animate={{ r: [26, 34, 26], opacity: [0.5, 0.1, 0.5] }}
+                transition={{ duration: 0.6, repeat: Infinity }}
               />
             )}
             <circle
@@ -93,18 +102,22 @@ const TreeCanvas = ({ tree, highlighted, comparing, width = 800, height = 450 }:
               cy={n.y}
               r={22}
               fill={
-                isHighlighted
-                  ? "hsl(var(--tree))"
-                  : isComparing
-                    ? "hsl(var(--warning))"
-                    : "hsl(var(--card))"
+                isSwapping
+                  ? "#ef4444" // 🔴 swap
+                  : isHighlighted
+                    ? "hsl(var(--tree))" // 🟢 correct
+                    : isComparing
+                      ? "hsl(var(--warning))" // 🟡 compare
+                      : "hsl(var(--card))"
               }
               stroke={
-                isHighlighted
-                  ? "hsl(var(--tree))"
-                  : isComparing
-                    ? "hsl(var(--warning))"
-                    : "hsl(var(--border))"
+                isSwapping
+                  ? "#ef4444"
+                  : isHighlighted
+                    ? "hsl(var(--tree))"
+                    : isComparing
+                      ? "hsl(var(--warning))"
+                      : "hsl(var(--border))"
               }
               strokeWidth={2}
             />

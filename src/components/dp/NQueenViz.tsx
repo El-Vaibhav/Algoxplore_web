@@ -19,30 +19,69 @@ const NQueenViz = ({ stepData, size }: Props) => {
     conflict.some(([x, y]: number[]) => x === r && y === c);
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-6 relative">
+
+      {/* BACKGROUND GLOW */}
+      <div className="absolute w-72 h-72 bg-purple-500/10 blur-[120px] rounded-full -z-10" />
 
       {/* BOARD */}
       <div
-        className="grid gap-2"
-        style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
+        className="grid p-3 rounded-2xl backdrop-blur-xl border border-white/10 shadow-xl"
+        style={{
+          gridTemplateColumns: `repeat(${size}, 1fr)`
+        }}
       >
         {board.map((row: number[], i: number) =>
           row.map((cell: number, j: number) => {
-            let bg = "bg-secondary";
 
-            if (cell) bg = "bg-green-500 text-white";
-            if (isHighlighted(i, j)) bg = "bg-yellow-400 text-black";
-            if (isConflict(i, j)) bg = "bg-red-500 text-white";
+            const isDark = (i + j) % 2 === 0;
+
+            let base =
+              isDark
+                ? "bg-[#1f2937]"   // dark square
+                : "bg-[#111827]";  // darker square
+
+            let stateStyle = "";
+
+            if (cell) {
+              stateStyle =
+                "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30";
+            }
+
+            if (isHighlighted(i, j)) {
+              stateStyle =
+                "bg-yellow-400 text-black shadow-lg shadow-yellow-400/40 animate-pulse";
+            }
+
+            if (isConflict(i, j)) {
+              stateStyle =
+                "bg-red-500 text-white shadow-lg shadow-red-500/40 animate-pulse";
+            }
 
             return (
               <motion.div
                 key={`${i}-${j}`}
-                className={`w-12 h-12 flex items-center justify-center rounded-md border ${bg}`}
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.2 }}
+                className={`
+                  w-14 h-14 flex items-center justify-center
+                  rounded-lg border border-white/10
+                  ${base} ${stateStyle}
+                `}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.08 }}
+                transition={{ duration: 0.25 }}
               >
-                {cell ? "♛" : ""}
+                {/* QUEEN */}
+                {cell && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="text-xl drop-shadow-lg"
+                  >
+                    ♛
+                  </motion.span>
+                )}
               </motion.div>
             );
           })
@@ -51,9 +90,14 @@ const NQueenViz = ({ stepData, size }: Props) => {
 
       {/* MESSAGE */}
       {stepData?.message && (
-        <div className="text-sm text-muted-foreground text-center">
+        <motion.div
+          key={stepData.message}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-sm text-muted-foreground text-center px-4 py-2 bg-white/5 rounded-lg border border-white/10 backdrop-blur-md"
+        >
           {stepData.message}
-        </div>
+        </motion.div>
       )}
     </div>
   );

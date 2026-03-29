@@ -25,20 +25,20 @@ export function avlConstructionSteps(root: TreeNode | null): { tree: TreeNode | 
     const bf = getBalanceFactor(node);
 
     steps.push(
-      makeStep(root,[node.value],[],`Checking balance factor of ${node.value} (BF = ${bf})`,[])
+      makeStep(root, [node.value], [], `Checking balance factor of ${node.value} (BF = ${bf})`, [])
     );
 
     // LL
     if (bf > 1 && getBalanceFactor(node.left) >= 0) {
 
       steps.push(
-        makeStep(root,[node.value],[],`Left-Left imbalance at ${node.value}`,[],"LL Rotation")
+        makeStep(root, [node.value], [], `Left-Left imbalance at ${node.value}`, [], "LL Rotation")
       );
 
       node = rotateRight(node);
 
       steps.push(
-        makeStep(root,[node.value],[],`Performed Right Rotation`,[])
+        makeStep(root, [node.value], [], `Performed Right Rotation`, [])
       );
     }
 
@@ -46,13 +46,13 @@ export function avlConstructionSteps(root: TreeNode | null): { tree: TreeNode | 
     else if (bf < -1 && getBalanceFactor(node.right) <= 0) {
 
       steps.push(
-        makeStep(root,[node.value],[],`Right-Right imbalance at ${node.value}`,[],"RR Rotation")
+        makeStep(root, [node.value], [], `Right-Right imbalance at ${node.value}`, [], "RR Rotation")
       );
 
       node = rotateLeft(node);
 
       steps.push(
-        makeStep(root,[node.value],[],`Performed Left Rotation`,[])
+        makeStep(root, [node.value], [], `Performed Left Rotation`, [])
       );
     }
 
@@ -60,14 +60,14 @@ export function avlConstructionSteps(root: TreeNode | null): { tree: TreeNode | 
     else if (bf > 1 && getBalanceFactor(node.left) < 0) {
 
       steps.push(
-        makeStep(root,[node.value],[],`Left-Right imbalance at ${node.value}`,[],"LR Rotation")
+        makeStep(root, [node.value], [], `Left-Right imbalance at ${node.value}`, [], "LR Rotation")
       );
 
       node.left = rotateLeft(node.left!);
       node = rotateRight(node);
 
       steps.push(
-        makeStep(root,[node.value],[],`Performed LR Rotation`,[])
+        makeStep(root, [node.value], [], `Performed LR Rotation`, [])
       );
     }
 
@@ -75,14 +75,14 @@ export function avlConstructionSteps(root: TreeNode | null): { tree: TreeNode | 
     else if (bf < -1 && getBalanceFactor(node.right) > 0) {
 
       steps.push(
-        makeStep(root,[node.value],[],`Right-Left imbalance at ${node.value}`,[],"RL Rotation")
+        makeStep(root, [node.value], [], `Right-Left imbalance at ${node.value}`, [], "RL Rotation")
       );
 
       node.right = rotateRight(node.right!);
       node = rotateLeft(node);
 
       steps.push(
-        makeStep(root,[node.value],[],`Performed RL Rotation`,[])
+        makeStep(root, [node.value], [], `Performed RL Rotation`, [])
       );
     }
 
@@ -92,16 +92,17 @@ export function avlConstructionSteps(root: TreeNode | null): { tree: TreeNode | 
   const newRoot = balance(root);
 
   steps.push(
-    makeStep(newRoot,[],[],`AVL Construction Complete`,[])
+    makeStep(newRoot, [], [], `AVL Construction Complete`, [])
   );
 
-  return { tree:newRoot, steps };
+  return { tree: newRoot, steps };
 }
 
 export interface AnimationStep {
   tree: TreeNode | null;
   highlighted: number[];    // node values currently highlighted
-  comparing: number[];      // node values being compared
+  comparing: number[];
+  swapping?: number[];     // node values being compared
   message: string;
   traversalOrder: number[]; // accumulated traversal result
   rotationType?: string;    // for AVL rotations
@@ -155,11 +156,21 @@ function makeStep(
   comparing: number[],
   message: string,
   traversalOrder: number[],
-  rotationType?: string
+  rotationType?: string,
+  swapping: number[] = []   // ✅ NEW
 ): AnimationStep {
   const t = cloneTree(tree);
   if (t) assignPositions(t);
-  return { tree: t, highlighted: [...highlighted], comparing: [...comparing], message, traversalOrder: [...traversalOrder], rotationType };
+
+  return {
+    tree: t,
+    highlighted: [...highlighted],
+    comparing: [...comparing],
+    swapping: [...swapping],  // ✅ NEW
+    message,
+    traversalOrder: [...traversalOrder],
+    rotationType,
+  };
 }
 
 // BST Insert with steps
@@ -233,7 +244,15 @@ export function inOrderSteps(root: TreeNode | null): AnimationStep[] {
     steps.push(makeStep(root, [node.value], [], `Visit left subtree of ${node.value}`, order));
     traverse(node.left);
     order.push(node.value);
-    steps.push(makeStep(root, [node.value], [], `Process ${node.value} (In-Order)`, order));
+    steps.push(
+      makeStep(
+        root,
+        [...order], // ✅ ALL visited nodes stay green
+        [],
+        `Process ${node.value} (In-Order)`,
+        order
+      )
+    );
     traverse(node.right);
   }
   traverse(root);
@@ -248,8 +267,15 @@ export function preOrderSteps(root: TreeNode | null): AnimationStep[] {
   function traverse(node: TreeNode | null) {
     if (!node) return;
     order.push(node.value);
-    steps.push(makeStep(root, [node.value], [], `Process ${node.value} (Pre-Order)`, order));
-    traverse(node.left);
+    steps.push(
+      makeStep(
+        root,
+        [...order], // ✅ persistent green nodes
+        [],
+        `Process ${node.value} (Pre-Order)`,
+        order
+      )
+    ); traverse(node.left);
     traverse(node.right);
   }
   traverse(root);
@@ -267,7 +293,15 @@ export function postOrderSteps(root: TreeNode | null): AnimationStep[] {
     traverse(node.left);
     traverse(node.right);
     order.push(node.value);
-    steps.push(makeStep(root, [node.value], [], `Process ${node.value} (Post-Order)`, order));
+    steps.push(
+      makeStep(
+        root,
+        [...order], // ✅ keep visited nodes green
+        [],
+        `Process ${node.value} (Post-Order)`,
+        order
+      )
+    );
   }
   traverse(root);
   steps.push(makeStep(root, [], [], `Post-Order traversal complete: [${order.join(', ')}]`, order));
@@ -319,25 +353,124 @@ export function avlInsertSteps(root: TreeNode | null, value: number): { tree: Tr
 
     // LL
     if (balance > 1 && val < node.left!.value) {
-      steps.push(makeStep(root, [node.value], [], `Left-Left imbalance at ${node.value}, rotating right`, [], 'LL Rotation'));
-      return rotateRight(node);
+
+      // 🔴 STEP 1: highlight nodes involved
+      steps.push(
+        makeStep(
+          root,
+          [],
+          [],
+          `LL Rotation at ${node.value}`,
+          [],
+          "LL Rotation",
+          [node.value, node.left!.value] // 🔴 RED
+        )
+      );
+
+      // 🔁 STEP 2: perform rotation
+      const newNode = rotateRight(node);
+
+      // 🟢 STEP 3: show result
+      steps.push(
+        makeStep(
+          newNode,
+          [newNode.value], // 🟢 new root
+          [],
+          `Right Rotation Done`,
+          []
+        )
+      );
+
+      return newNode;
     }
     // RR
     if (balance < -1 && val > node.right!.value) {
-      steps.push(makeStep(root, [node.value], [], `Right-Right imbalance at ${node.value}, rotating left`, [], 'RR Rotation'));
-      return rotateLeft(node);
+
+      steps.push(
+        makeStep(
+          root,
+          [],
+          [],
+          `RR Rotation at ${node.value}`,
+          [],
+          "RR Rotation",
+          [node.value, node.right!.value]
+        )
+      );
+
+      const newNode = rotateLeft(node);
+
+      steps.push(
+        makeStep(
+          newNode,
+          [newNode.value],
+          [],
+          `Left Rotation Done`,
+          []
+        )
+      );
+
+      return newNode;
     }
     // LR
     if (balance > 1 && val > node.left!.value) {
-      steps.push(makeStep(root, [node.value], [], `Left-Right imbalance at ${node.value}, double rotation`, [], 'LR Rotation'));
+
+      steps.push(
+        makeStep(
+          root,
+          [],
+          [],
+          `LR Rotation at ${node.value}`,
+          [],
+          "LR Rotation",
+          [node.value, node.left!.value]
+        )
+      );
+
       node.left = rotateLeft(node.left!);
-      return rotateRight(node);
+      const newNode = rotateRight(node);
+
+      steps.push(
+        makeStep(
+          newNode,
+          [newNode.value],
+          [],
+          `LR Rotation Done`,
+          []
+        )
+      );
+
+      return newNode;
     }
     // RL
     if (balance < -1 && val < node.right!.value) {
-      steps.push(makeStep(root, [node.value], [], `Right-Left imbalance at ${node.value}, double rotation`, [], 'RL Rotation'));
+
+      steps.push(
+        makeStep(
+          root,
+          [],
+          [],
+          `RL Rotation at ${node.value}`,
+          [],
+          "RL Rotation",
+          [node.value, node.right!.value]
+        )
+      );
+
       node.right = rotateRight(node.right!);
-      return rotateLeft(node);
+      const newNode = rotateLeft(node);
+
+      steps.push(
+        makeStep(
+          newNode,
+          [newNode.value],
+          [],
+          `RL Rotation Done`,
+          []
+        )
+      );
+
+      return newNode;
     }
 
     return node;
@@ -455,10 +588,55 @@ function heapify(arr: number[], n: number, i: number, isMin: boolean, steps: Ani
   }
 
   if (extreme !== i) {
-    steps.push(makeStep(root, [arr[i], arr[extreme]], [], `Swap ${arr[i]} and ${arr[extreme]}`, []));
+
+    // 🔴 STEP A: Highlight swap BEFORE it happens (RED)
+    steps.push(
+      makeStep(
+        root,
+        [],
+        [],
+        `Swapping ${arr[i]} and ${arr[extreme]}`,
+        [],
+        undefined,
+        [arr[i], arr[extreme]] // 👈 THIS triggers RED color
+      )
+    );
+
+    // 🔁 ACTUAL SWAP
     [arr[i], arr[extreme]] = [arr[extreme], arr[i]];
+
+    // 🟢 STEP B: Show result AFTER swap (GREEN)
+    steps.push(
+      makeStep(
+        root,
+        [arr[extreme]], // 👈 mark as "placed"
+        [],
+        `${arr[extreme]} moved to correct position`,
+        []
+      )
+    );
+
+    // 🔄 Continue heapify
     heapify(arr, n, extreme, isMin, steps, root);
   }
+}
+
+export function getLevelOrderValues(root: TreeNode | null): number[] {
+  if (!root) return [];
+
+  const result: number[] = [];
+  const queue: (TreeNode | null)[] = [root];
+
+  while (queue.length) {
+    const node = queue.shift();
+    if (!node) continue;
+
+    result.push(node.value);
+    queue.push(node.left);
+    queue.push(node.right);
+  }
+
+  return result;
 }
 
 // Convert array → complete binary tree

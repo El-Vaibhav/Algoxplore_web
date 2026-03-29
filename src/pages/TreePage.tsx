@@ -6,6 +6,8 @@ import SpeedControl from "@/components/SpeedControl";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { heapConstructionSteps } from "@/lib/treeAlgorithms";
+import { getLevelOrderValues } from "@/lib/treeAlgorithms";
+import { avlInsertSteps } from "@/lib/treeAlgorithms";
 import {
   TreeNode,
   AnimationStep,
@@ -49,7 +51,7 @@ const algorithms: { key: AlgoType; label: string; group: string }[] = [
   { key: "post-order", label: "Post-Order", group: "Traversal" },
   { key: "avl-insert", label: "AVL Construction", group: "AVL" },
   { key: "min-heap", label: "Min Heap", group: "Heap" },
-  { key: "max-heap", label: "Max Heap", group: "Heap" }, 
+  { key: "max-heap", label: "Max Heap", group: "Heap" },
 ];
 
 const algoInfo: Record<AlgoType, { name: string; explanation: string; timeComplexity: { best: string; average: string; worst: string }; code: string }> = {
@@ -138,6 +140,7 @@ const TreePage = () => {
   const highlighted = currentStepData?.highlighted ?? [];
   const comparing = currentStepData?.comparing ?? [];
   const displayTree = currentStepData?.tree ?? tree;
+  const swapping = currentStepData?.swapping ?? [];
 
   const stopAnimation = useCallback(() => {
     setIsRunning(false);
@@ -192,21 +195,30 @@ const TreePage = () => {
         break;
       case "avl-insert": {
 
-        const result = avlConstructionSteps(tree);
+        const values = getAllValues(tree);
 
-        newSteps = result.steps;
+        let tempTree: TreeNode | null = null;
+        let allSteps: AnimationStep[] = [];
+
+        // 🔁 Build AVL step-by-step using avlInsertSteps
+        for (const v of values) {
+          const result = avlInsertSteps(tempTree, v);
+          tempTree = result.tree;
+          allSteps.push(...result.steps);
+        }
+
+        newSteps = allSteps;
 
         setTimeout(() => {
-          const t = result.tree;
-          if (t) assignPositions(t);
-          setTree(t);
+          if (tempTree) assignPositions(tempTree);
+          setTree(tempTree);
         }, newSteps.length * Math.max(100, 1100 - speed * 100) + 200);
 
         break;
       }
       case "min-heap":
       case "max-heap": {
-        const values = getAllValues(tree);
+        const values = getLevelOrderValues(tree);
 
         if (!values.length) return;
 
@@ -264,6 +276,7 @@ const TreePage = () => {
               tree={displayTree}
               highlighted={highlighted}
               comparing={comparing}
+              swapping={swapping}
               width={1000}
               height={600}
             />
