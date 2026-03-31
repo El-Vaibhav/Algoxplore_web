@@ -195,11 +195,43 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8">
-        <div className="container mx-auto px-6 text-center text-xs text-muted-foreground">
-          Built for learning. Visualize algorithms interactively.
-        </div>
-      </footer>
+      {/* Footer */}
+<footer className="border-t border-border py-8">
+  <div className="container mx-auto px-6 text-center text-xs text-muted-foreground space-y-2">
+    
+    <p>
+      Built for learning. Visualize algorithms interactively.
+    </p>
+
+    <p>
+      Developed by{" "}
+      <span className="font-medium text-foreground">
+        Vaibhav
+      </span>
+    </p>
+
+    <div className="flex justify-center gap-4">
+      <a
+        href="https://elvaibhavportfolionew.vercel.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:text-primary transition"
+      >
+        Portfolio
+      </a>
+
+      <a
+        href="https://www.linkedin.com/in/vaibhav-sodhi-8b0207257"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:text-primary transition"
+      >
+        LinkedIn
+      </a>
+    </div>
+
+  </div>
+</footer>
     </div>
   );
 };
