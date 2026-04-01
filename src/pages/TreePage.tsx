@@ -265,10 +265,10 @@ const TreePage = () => {
     <AlgoLayout title="Tree Algorithms">
 
       {/* ===== MAIN GRID ===== */}
-      <div className="grid grid-cols-[1fr_320px] grid-rows-[1fr_auto] gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4 md:gap-6 items-stretch">
 
         {/* ================= TREE CANVAS ================= */}
-        <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-6 relative h-full overflow-hidden flex items-center justify-center">
+        <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-3 md:p-6 relative min-h-[320px] md:min-h-[520px] overflow-hidden flex items-center justify-center">
           <div className="absolute top-0 left-1/4 w-64 h-64 bg-tree/5 rounded-full blur-[100px]" />
           <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-tree/3 rounded-full blur-[80px]" />
 
@@ -290,9 +290,9 @@ const TreePage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="absolute bottom-4 left-4 right-4 flex justify-between"
+                className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 flex flex-col md:flex-row gap-2 justify-between"
               >
-                <div className="bg-card/90 backdrop-blur border border-border rounded-xl px-4 py-2 text-sm">
+                <div className="bg-card/90 backdrop-blur border border-border rounded-xl px-4 py-2 text-xs md:text-sm">
                   {currentStepData.message}
                 </div>
 
@@ -309,7 +309,7 @@ const TreePage = () => {
 
 
         {/* ================= ALGORITHM PANEL ================= */}
-        <div className="rounded-xl border border-border bg-card p-5 space-y-5 h-full flex flex-col">
+        <div className="rounded-xl border border-border bg-card p-4 md:p-5 space-y-5 h-full flex flex-col">
 
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <TreeDeciduous className="w-4 h-4 text-tree" />
@@ -323,7 +323,7 @@ const TreePage = () => {
                 {group}
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {algorithms
                   .filter(a => a.group === group)
                   .map(algo => (

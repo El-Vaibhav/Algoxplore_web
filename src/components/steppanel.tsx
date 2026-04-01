@@ -24,7 +24,7 @@ export default function StepPanel({ steps, currentStep }: Props) {
 
     <div
       ref={panelRef}
-      className="w-[350px] h-[500px] bg-zinc-900 rounded-xl p-4 overflow-y-auto border border-zinc-700"
+      className="w-full xl:w-[320px] h-[260px] md:h-[500px] bg-zinc-900 rounded-xl p-4 overflow-y-auto border border-zinc-700"
     >
 
       <h2 className="text-sm font-semibold text-cyan-400 mb-3">
