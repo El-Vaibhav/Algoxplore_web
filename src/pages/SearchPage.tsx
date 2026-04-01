@@ -173,9 +173,9 @@ const SearchPage = () => {
 
   return (
     <AlgoLayout title="Search & Pathfinding">
-      <div className="grid lg:grid-cols-[1fr_300px] gap-6">
+      <div className="grid lg:grid-cols-[1fr_300px] gap-4 md:gap-6">
         <div className="space-y-4">
-          <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-6 min-h-[480px] relative overflow-hidden">
+          <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-3 md:p-6 min-h-[420px] md:min-h-[480px] relative overflow-hidden">
             <div className="absolute top-0 left-1/4 w-64 h-64 bg-search/5 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-search/3 rounded-full blur-[80px] pointer-events-none" />
 
@@ -206,7 +206,7 @@ const SearchPage = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="absolute bottom-4 left-4 right-4 bg-card/90 backdrop-blur-md border border-border rounded-xl px-4 py-2.5 text-sm text-foreground"
+                  className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-card/90 backdrop-blur-md border border-border rounded-xl px-3 md:px-4 py-2 text-xs md:text-sm text-foreground"
                 >
                   {selectedAlgo === "binary-search" && bsSteps[bsStep]?.message}
                   {selectedAlgo === "a-star" && asSteps[asStep]?.message}
@@ -366,8 +366,9 @@ function BinarySearchViz({
   const arr = step?.array ?? array;
 
   return (
-    <div className="flex flex-col items-center justify-start h-full gap-7 pt-40">
-      <div className="flex gap-1.5 items-end">
+    <div className="flex flex-col items-center justify-start h-full gap-6 pt-10 md:pt-24 lg:pt-40">
+      <div className="w-full overflow-x-auto">
+        <div className="flex gap-1.5 items-end w-max mx-auto px-1">
         {arr.map((val, idx) => {
           let bgClass = "bg-secondary/60";
           let textClass = "text-muted-foreground";
@@ -392,7 +393,7 @@ function BinarySearchViz({
               className={`flex flex-col items-center gap-1`}
             >
               <motion.div
-                className={`w-10 h-10 rounded-lg border border-border ${bgClass} flex items-center justify-center text-xs font-mono font-semibold ${textClass}`}
+                className={`w-8 h-8 md:w-10 md:h-10 rounded-lg border border-border ${bgClass} flex items-center justify-center text-[10px] md:text-xs font-mono font-semibold ${textClass}`}
                 animate={{ scale: idx === step?.mid ? 1.15 : 1 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
@@ -409,9 +410,10 @@ function BinarySearchViz({
             </motion.div>
           );
         })}
+        </div>
       </div>
       {!step && (
-        <p className="text-sm text-muted-foreground">Enter a target value and click Run to start Binary Search</p>
+        <p className="text-xs md:text-sm text-muted-foreground text-center px-2">Enter a target value and click Run to start Binary Search</p>
       )}
     </div>
   );
@@ -509,7 +511,8 @@ function AOStarViz({ steps, currentStep }: { steps: AOStarStep[]; currentStep: n
   const currentNode = step?.currentNode;
 
   return (
-    <svg width="100%" height="100%" viewBox="0 0 800 320" className="overflow-visible">
+    <div className="w-full h-full overflow-x-auto">
+      <svg width="100%" height="100%" viewBox="0 0 800 320" className="min-w-[720px] overflow-visible">
       {/* Edges */}
       {edges.map((e, i) => {
         const from = nodes.find(n => n.id === e.from);
@@ -587,7 +590,8 @@ function AOStarViz({ steps, currentStep }: { steps: AOStarStep[]; currentStep: n
           </motion.g>
         );
       })}
-    </svg>
+      </svg>
+    </div>
 
   );
 }
