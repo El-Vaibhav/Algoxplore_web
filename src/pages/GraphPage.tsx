@@ -22,7 +22,6 @@ import {
   type GraphEdge,
   type GraphStep,
 } from "@/lib/graphAlgorithms";
-import { set } from "date-fns";
 
 const algorithms = Object.keys(graphAlgoInfo);
 const algoFns: Record<string, (...args: any[]) => GraphStep[]> = {
@@ -180,8 +179,8 @@ const GraphPage = () => {
       <div className="grid lg:grid-cols-[1fr_300px] gap-5">
         {/* Graph Visualization - takes most space */}
         <div className="space-y-3">
-          <div className="rounded-xl border border-border bg-card p-4 min-h-[500px] flex flex-col items-center justify-center">
-            <div className="flex items-center justify-between mb-3">
+          <div className="rounded-xl border border-border bg-card p-3 md:p-4 min-h-[500px] flex flex-col items-center justify-center">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-3 w-full">
               <h3 className="text-sm font-semibold text-foreground">
 
                 {currentStep?.description === "All Nodes Visited"
@@ -198,12 +197,12 @@ const GraphPage = () => {
                 </span>
               )}
             </div>
-            <div className="flex gap-6 items-start">
+            <div className="flex flex-col xl:flex-row gap-4 md:gap-6 items-stretch xl:items-start w-full">
               <StepPanel
                 steps={[...stepsRef.current]}
                 currentStep={stepIndex}
               />
-              <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-[620px] h-[520px] rounded-lg bg-secondary/20">
+              <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full xl:w-[620px] h-auto rounded-lg bg-secondary/20">
                 {graph.edges.map((e, i) => {
                   const from = graph.nodes[e.from];
                   const to = graph.nodes[e.to];
