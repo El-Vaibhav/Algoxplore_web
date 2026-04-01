@@ -14,6 +14,7 @@ import {
   aoStarSteps,
   generateRandomWalls,
 } from "@/lib/searchAlgorithms";
+import ComplexityPanel from "@/components/ComplexityPanel";
 
 type AlgoType = "binary-search" | "a-star" | "ao-star";
 
@@ -281,31 +282,29 @@ const SearchPage = () => {
 
               <div className="flex gap-2">
 
-  <Button
-    size="sm"
-    className={`w-full transition-colors ${
-      placing === "start"
-        ? "border-border bg-secondary/30"
-        : "bg-success text-white border-success hover:bg-success/90"
-    }`}
-    onClick={() => setPlacing("start")}
-  >
-    Set Start
-  </Button>
+                <Button
+                  size="sm"
+                  className={`w-full transition-colors ${placing === "start"
+                    ? "border-border bg-secondary/30"
+                    : "bg-success text-white border-success hover:bg-success/90"
+                    }`}
+                  onClick={() => setPlacing("start")}
+                >
+                  Set Start
+                </Button>
 
-  <Button
-    size="sm"
-    className={`w-full transition-colors ${
-      placing === "end"
-        ? "border-border bg-secondary/30"
-        : "bg-search text-white border-search hover:bg-search/90"
-    }`}
-    onClick={() => setPlacing("end")}
-  >
-    Set End
-  </Button>
+                <Button
+                  size="sm"
+                  className={`w-full transition-colors ${placing === "end"
+                    ? "border-border bg-secondary/30"
+                    : "bg-search text-white border-search hover:bg-search/90"
+                    }`}
+                  onClick={() => setPlacing("end")}
+                >
+                  Set End
+                </Button>
 
-</div>
+              </div>
 
             </div>
           )}
@@ -346,6 +345,8 @@ const SearchPage = () => {
           accentColor="search"
         />
       </div>
+      <ComplexityPanel category="search" accentClass="text-search" />
+
     </AlgoLayout>
   );
 };
@@ -481,7 +482,7 @@ function AStarViz({
                   if (placing === "start") {
                     setStart({ row: r, col: c });
                     setPlacing(null);
-                  } 
+                  }
                   else if (placing === "end") {
                     setEnd({ row: r, col: c });
                     setPlacing(null);
@@ -586,9 +587,8 @@ function AOStarViz({ steps, currentStep }: { steps: AOStarStep[]; currentStep: n
           </motion.g>
         );
       })}
-
-
     </svg>
+
   );
 }
 

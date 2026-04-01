@@ -24,6 +24,7 @@ import RatMazeViz from "@/components/dp/RatMazeViz";
 import MazeInput from "@/components/dp/MazeInput";
 import { sudokuSteps, defaultSudoku } from "@/lib/dpAlgorithms";
 import SudokuViz from "@/components/dp/SudokuViz";
+import ComplexityPanel from "@/components/ComplexityPanel";
 
 type AlgoType = "knapsack" | "fractional" | "lcs" | "mcm" | "nqueen" | "ratmaze" | "sudoku";
 
@@ -771,6 +772,8 @@ const DPPage = () => {
           )}
         </div>
       </div>
+      <ComplexityPanel category="dp" accentClass="text-dp" />
+
     </AlgoLayout>
   );
 };

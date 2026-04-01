@@ -6,6 +6,7 @@ import {
   sortingAlgoInfo, type SortStep,
 } from "@/lib/sortingAlgorithms";
 import { useNavigate } from "react-router-dom";
+import ComplexityPanel from "@/components/ComplexityPanel";
 const algorithms = ["Bubble Sort", "Insertion Sort", "Selection Sort", "Merge Sort", "Quick Sort"];
 const algoFns: Record<string, (arr: number[]) => SortStep[]> = {
   "Bubble Sort": bubbleSort, "Insertion Sort": insertionSort, "Selection Sort": selectionSort,
@@ -180,6 +181,7 @@ const SortingPage = () => {
           </div>
         )}
       </div>
+        <ComplexityPanel category="sorting" accentClass="text-sorting" />
     </AlgoLayout>
   );
 };

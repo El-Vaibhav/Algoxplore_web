@@ -7,6 +7,7 @@ import {
   priorityPreemptive,
 } from "@/lib/schedulingAlgorithms";
 import { useNavigate } from "react-router-dom";
+import ComplexityPanel from "@/components/ComplexityPanel";
 
 const algorithms = Object.keys(schedulingAlgoInfo);
 const COLORS = [
@@ -415,6 +416,8 @@ const SchedulingPage = () => {
 
         </div>
       </div>
+      <ComplexityPanel category="scheduling" accentClass="text-scheduling" />
+
     </AlgoLayout>
   );
 };

@@ -24,6 +24,7 @@ import {
   getAllValues,
 } from "@/lib/treeAlgorithms";
 import { Play, Pause, RotateCcw, Plus, Search, Trash2, TreeDeciduous } from "lucide-react";
+import ComplexityPanel from "@/components/ComplexityPanel";
 
 type AlgoType = "bst-insert" | "bst-search" | "bst-delete" | "in-order" | "pre-order" | "post-order" | "avl-insert" | "min-heap" | "max-heap";
 
@@ -471,6 +472,8 @@ const TreePage = () => {
           accentColor="tree"
         />
       </div>
+      <ComplexityPanel category="tree" accentClass="text-tree" />
+
 
     </AlgoLayout>
   );

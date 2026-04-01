@@ -4,6 +4,8 @@ import AlgoInfo from "@/components/AlgoInfo";
 import SpeedControl from "@/components/SpeedControl";
 import StepPanel from "@/components/steppanel";
 import { useNavigate } from "react-router-dom";
+import ComplexityPanel from "@/components/ComplexityPanel";
+
 import {
   generateRandomGraph,
   generateKosarajuGraph,
@@ -412,6 +414,8 @@ const GraphPage = () => {
           </div>
         )}
       </div>
+      <ComplexityPanel category="graph" accentClass="text-graph" />
+
     </AlgoLayout >
   );
 };
