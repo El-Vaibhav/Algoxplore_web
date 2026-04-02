@@ -1,17 +1,18 @@
-🚀 AlgoXplore Web
+#🚀 AlgoXplore Web
 AlgoXplore Web is a modern web platform designed to make algorithmic learning, exploration, and implementation more interactive and accessible.
 Whether you are a beginner trying to understand core concepts or an advanced learner comparing optimization techniques, this project provides a clean interface and practical tooling to experiment confidently.
 
 The goal is simple: turn complex algorithm topics into visual, understandable, and testable experiences.
 
-✨ Key Features
+
+#✨ Key Features
 Interactive Algorithm Exploration
 Explore algorithm behavior through a user-friendly web interface.
 
-Educational Focus
+##Educational Focus
 Structured layouts and clear feedback help users understand how and why algorithms work.
 
-Scalable Frontend Architecture
+##Scalable Frontend Architecture
 Built with maintainability in mind, allowing easy extension with new modules/components.
 
 Developer-Friendly Workflow
