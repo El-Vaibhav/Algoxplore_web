@@ -15,13 +15,13 @@ Structured layouts and clear feedback help users understand how and why algorith
 ## Scalable Frontend Architecture
 Built with maintainability in mind, allowing easy extension with new modules/components.
 
-Developer-Friendly Workflow
+## Developer-Friendly Workflow
 Organized project structure, reusable components, and straightforward setup for contributors.
 
-Performance-Oriented Design
+## Performance-Oriented Design
 Optimized rendering and modular logic to support responsive interactions.
 
-🎯 Project Vision
+# 🎯 Project Vision
 AlgoXplore Web aims to bridge the gap between theory and implementation by offering:
 
 Concept clarity through visual and interactive learning patterns.
@@ -30,8 +30,7 @@ Practical experimentation for comparing approaches and outcomes.
 
 Community-driven growth where contributors can add new algorithms, UI modules, and improvements.
 
-🧱 Tech Stack
-Update this section with your exact stack if needed.
+# 🧱 Tech Stack
 
 Frontend: JavaScript/TypeScript, modern component-based UI framework
 
@@ -43,7 +42,7 @@ Package Management: npm / yarn / pnpm
 
 Version Control: Git + GitHub
 
-⚙️ Getting Started
+# ⚙️ Getting Started
 1) Clone the repository
 git clone https://github.com/<your-username>/Algoxplore_web.git
 cd Algoxplore_web
@@ -55,7 +54,8 @@ npm run dev
 npm run build
 5) Preview production build
 npm run preview
-📁 Suggested Project Structure
+
+# 📁 Suggested Project Structure
 Algoxplore_web/
 ├── src/
 │   ├── components/      # Reusable UI components
@@ -67,7 +67,8 @@ Algoxplore_web/
 ├── public/              # Static assets
 ├── package.json
 └── README.md
-🧪 Testing & Quality
+
+# 🧪 Testing & Quality
 To maintain reliability and code quality, this project encourages:
 
 Unit testing for core logic
@@ -83,25 +84,26 @@ Add your actual test/lint commands below:
 npm run test
 npm run lint
 npm run format
-🤝 Contributing
+
+# 🤝 Contributing
 Contributions are welcome and appreciated.
 
-Fork the repository
+# Fork the repository
 
-Create a new branch
+## Create a new branch
 git checkout -b feature/your-feature-name
 
-Commit your changes
+## Commit your changes
 git commit -m "feat: add your feature"
 
-Push your branch
+## Push your branch
 git push origin feature/your-feature-name
 
 Open a Pull Request
 
 Please keep PRs focused, documented, and easy to review.
 
-🛣️ Roadmap
+# 🛣️ Roadmap
 Add more algorithm modules and categories
 
 Improve visualization depth and interactivity
@@ -112,9 +114,9 @@ Enhance accessibility and mobile responsiveness
 
 Introduce contributor docs and examples
 
-📄 License
+# 📄 License
 This project is licensed under the MIT License (or your preferred license).
 See the LICENSE file for details.
 
-🙌 Acknowledgements
+# 🙌 Acknowledgements
 Thanks to all contributors, learners, and open-source communities that inspire this project.
