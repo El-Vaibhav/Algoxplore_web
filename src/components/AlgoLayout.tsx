@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { ReactNode } from "react";
 import { GitBranch, BarChart3, Clock, Home, Shuffle, TreeDeciduous, Search, Brain} from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 interface AlgoLayoutProps {
   title: string;
   children: ReactNode;
@@ -82,14 +84,63 @@ const AlgoLayout = ({ title, children }: AlgoLayoutProps) => {
 
           </nav>
 
-          {/* Home Button */}
-          <Link
-            to="/"
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Home className="w-3.5 h-3.5" />
-            Home
-          </Link>
+          <div className="flex items-center gap-2">
+            {/* Mobile Navigation */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm" className="sm:hidden text-xs px-2.5">
+                  Menu
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[85vw] max-w-xs p-5">
+                <div className="space-y-4">
+                  <div className="text-sm font-semibold">Navigate</div>
+                  <div className="grid gap-2">
+                    {navItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = location.pathname.startsWith(item.path);
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                            isActive
+                              ? `bg-secondary ${item.colorClass} font-medium`
+                              : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                    {!location.pathname.startsWith("/trees") && !location.pathname.startsWith("/search") && !location.pathname.startsWith("/dp") && (
+                      <Link
+                        to={comparePath}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                          location.pathname.includes("compare")
+                            ? "bg-secondary text-accent font-medium"
+                            : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                        }`}
+                      >
+                        <Shuffle className="w-4 h-4" />
+                        Compare
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            {/* Home Button */}
+            <Link
+              to="/"
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Home className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Home</span>
+            </Link>
+          </div>
 
         </div>
       </header>
