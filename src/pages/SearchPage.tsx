@@ -175,7 +175,7 @@ const SearchPage = () => {
     <AlgoLayout title="Search & Pathfinding">
       <div className="grid lg:grid-cols-[1fr_300px] gap-4 md:gap-6">
         <div className="space-y-4">
-          <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-2 sm:p-3 md:p-6 min-h-[300px] sm:min-h-[360px] md:min-h-[480px] relative overflow-hidden">
+          <div className="flex flex-col items-center justify-center h-full gap-4 md:gap-6 py-4 md:py-8">
             <div className="absolute top-0 left-1/4 w-64 h-64 bg-search/5 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-search/3 rounded-full blur-[80px] pointer-events-none" />
 
@@ -366,7 +366,7 @@ function BinarySearchViz({
   const arr = step?.array ?? array;
 
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-4 md:gap-6 py-4 md:py-8">
+      <div className="flex flex-col items-center justify-center h-full gap-4 md:gap-6 py-4 md:py-8">
       <div className="w-full overflow-x-auto">
         <div className="flex gap-1.5 items-end w-max mx-auto px-1">
         {arr.map((val, idx) => {
@@ -412,9 +412,9 @@ function BinarySearchViz({
         })}
         </div>
       </div>
-      <p className="text-xs md:text-sm text-muted-foreground text-center px-2">
-        {step ? "Binary search in progress..." : "Enter a target value and click Run to start Binary Search"}
-      </p>
+<p className="text-xs md:text-sm text-muted-foreground text-center px-2">
+  {step ? "Binary search in progress..." : "Enter a target value and click Run to start Binary Search"}
+</p>
     </div>
   );
 }
@@ -511,7 +511,7 @@ function AOStarViz({ steps, currentStep }: { steps: AOStarStep[]; currentStep: n
   const currentNode = step?.currentNode;
 
   return (
-    <div className="w-full h-full overflow-x-auto py-2">
+        <div className="w-full h-full overflow-x-auto py-2">
       <svg width="100%" height="100%" viewBox="0 0 800 320" className="min-w-[720px] overflow-visible">
       {/* Edges */}
       {edges.map((e, i) => {
