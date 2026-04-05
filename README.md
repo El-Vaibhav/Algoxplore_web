@@ -4,6 +4,9 @@ Whether you are a beginner trying to understand core concepts or an advanced lea
 
 The goal is simple: turn complex algorithm topics into visual, understandable, and testable experiences.
 
+<img width="1524" height="855" alt="image" src="https://github.com/user-attachments/assets/b85d8afe-b1ab-43b0-b798-b44f8c30b016" />
+
+
 <img width="944" height="772" alt="image" src="https://github.com/user-attachments/assets/aade2b2d-29ad-4d77-9f27-81dc02a2e0d5" />
 
 <br><br>
