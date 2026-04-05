@@ -4,6 +4,20 @@ Whether you are a beginner trying to understand core concepts or an advanced lea
 
 The goal is simple: turn complex algorithm topics into visual, understandable, and testable experiences.
 
+<img width="944" height="772" alt="image" src="https://github.com/user-attachments/assets/aade2b2d-29ad-4d77-9f27-81dc02a2e0d5" />
+
+<br><br>
+
+<img width="1393" height="890" alt="image" src="https://github.com/user-attachments/assets/adc1cd59-173d-4018-82c8-bbadeaa0be7b" />
+
+<br><br>
+
+<img width="1371" height="893" alt="image" src="https://github.com/user-attachments/assets/4d4154cb-b031-4022-84ad-c1976664dbcd" />
+
+<br><br>
+
+<img width="1372" height="908" alt="image" src="https://github.com/user-attachments/assets/f80a7c1a-ac99-432f-8481-a56de01937e8" />
+
 
 # ✨ Key Features
 Interactive Algorithm Exploration
