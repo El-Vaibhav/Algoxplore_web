@@ -16,6 +16,13 @@ The goal is simple: turn complex algorithm topics into visual, understandable, a
 
 <br><br>
 
+<img width="1754" height="822" alt="image" src="https://github.com/user-attachments/assets/f2ad3af3-c228-4d88-803e-08bfaa52a778" />
+
+<br><br>
+<img width="1587" height="892" alt="image" src="https://github.com/user-attachments/assets/aca7cae5-9979-4c24-9031-6b83223e2003" />
+
+<br><br>
+
 <img width="1372" height="908" alt="image" src="https://github.com/user-attachments/assets/f80a7c1a-ac99-432f-8481-a56de01937e8" />
 
 
