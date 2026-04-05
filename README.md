@@ -6,9 +6,6 @@ The goal is simple: turn complex algorithm topics into visual, understandable, a
 
 <img width="1524" height="855" alt="image" src="https://github.com/user-attachments/assets/b85d8afe-b1ab-43b0-b798-b44f8c30b016" />
 
-
-<img width="944" height="772" alt="image" src="https://github.com/user-attachments/assets/aade2b2d-29ad-4d77-9f27-81dc02a2e0d5" />
-
 <br><br>
 
 <img width="1393" height="890" alt="image" src="https://github.com/user-attachments/assets/adc1cd59-173d-4018-82c8-bbadeaa0be7b" />
@@ -16,6 +13,9 @@ The goal is simple: turn complex algorithm topics into visual, understandable, a
 <br><br>
 
 <img width="1371" height="893" alt="image" src="https://github.com/user-attachments/assets/4d4154cb-b031-4022-84ad-c1976664dbcd" />
+<br><br>
+
+<img width="1723" height="822" alt="image" src="https://github.com/user-attachments/assets/d7c03dbf-d037-46bb-b717-bf41bb8d7873" />
 
 <br><br>
 
