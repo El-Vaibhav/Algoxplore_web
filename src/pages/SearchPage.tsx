@@ -261,7 +261,7 @@ const SearchPage = () => {
             <div className="absolute top-0 left-1/4 w-64 h-64 bg-search/5 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-search/3 rounded-full blur-[80px] pointer-events-none" />
 
-            <div className="relative z-10 h-full">
+            <div className="relative z-10 h-full overflow-hidden">
               {selectedAlgo === "binary-search" && (
                 <BinarySearchViz steps={bsSteps} currentStep={bsStep} array={bsArray} />
               )}
@@ -466,7 +466,7 @@ function BinarySearchViz({
   const arr = step?.array ?? array;
 
   return (
-    <div className="flex flex-col items-center justify-start h-full gap-6 pt-10 md:pt-24 lg:pt-40">
+      <div className="flex flex-col items-center justify-center h-full gap-4 md:gap-6 py-4 md:py-8">
       <div className="w-full overflow-x-auto">
         <div className="flex gap-1.5 items-end w-max mx-auto px-1">
           {arr.map((val, idx) => {
@@ -512,9 +512,9 @@ function BinarySearchViz({
           })}
         </div>
       </div>
-      {!step && (
-        <p className="text-xs md:text-sm text-muted-foreground text-center px-2">Enter a target value and click Run to start Binary Search</p>
-      )}
+<p className="text-xs md:text-sm text-muted-foreground text-center px-2">
+  {step ? "Binary search in progress..." : "Enter a target value and click Run to start Binary Search"}
+</p>
     </div>
   );
 }
@@ -611,7 +611,7 @@ function AOStarViz({ steps, currentStep }: { steps: AOStarStep[]; currentStep: n
   const currentNode = step?.currentNode;
 
   return (
-    <div className="w-full h-full overflow-x-auto">
+        <div className="w-full h-full overflow-x-auto py-2">
       <svg width="100%" height="100%" viewBox="0 0 800 320" className="min-w-[720px] overflow-visible">
         {/* Edges */}
         {edges.map((e, i) => {
