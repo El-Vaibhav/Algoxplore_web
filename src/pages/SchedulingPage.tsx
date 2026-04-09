@@ -8,6 +8,8 @@ import {
 } from "@/lib/schedulingAlgorithms";
 import { useNavigate } from "react-router-dom";
 import ComplexityPanel from "@/components/ComplexityPanel";
+import { QuizToggle, QuizScoreBadge, QuizCard, QuizSummary } from "@/components/QuizMode";
+import { schedulingQuiz } from "@/lib/quizGenerators";
 
 const algorithms = Object.keys(schedulingAlgoInfo);
 const COLORS = [
@@ -25,6 +27,25 @@ const SchedulingPage = () => {
   const [result, setResult] = useState<ScheduleResult | null>(null);
   const [speed, setSpeed] = useState(1);
   const [isRunning, setIsRunning] = useState(false);
+  const [quizActive, setQuizActive] = useState(false);
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizTotal, setQuizTotal] = useState(0);
+  const [stepIndex, setStepIndex] = useState(-1);
+  const [isPaused, setIsPaused] = useState(false);
+  const handleAnswer = (correct: boolean) => {
+    setQuizTotal(prev => prev + 1);
+    if (correct) setQuizScore(prev => prev + 1);
+
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    setIsPaused(false);   // ✅ resume
+    setIsRunning(true);   // ✅ restart animation
+  };
+
+  const currentQuestion =
+    quizActive && result && stepIndex >= 0 && stepIndex < result.gantt.length
+      ? schedulingQuiz(stepIndex, result.gantt)
+      : null;
 
   // Animation state: how many gantt blocks are visible, and current simulated time
   const [visibleBlocks, setVisibleBlocks] = useState(0);
@@ -132,18 +153,33 @@ const SchedulingPage = () => {
 
   // Animate blocks appearing one by one
   useEffect(() => {
-    if (!isRunning || !result) return;
-
+    if (!isRunning || !result || isPaused) return;
     const animateNext = () => {
       setVisibleBlocks(prev => {
         const next = prev + 1;
-        if (next <= result.gantt.length) {
+
+        if (result && next <= result.gantt.length) {
           setCurrentTime(result.gantt[next - 1].end);
+          setStepIndex(next - 1);
         }
+
+        const question =
+          quizActive && result
+            ? schedulingQuiz(next - 1, result.gantt)
+            : null;
+
+        // ✅ PAUSE PROPERLY
+        if (quizActive && question) {
+          setIsPaused(true);   // 🔥 IMPORTANT
+          setIsRunning(false); // stop loop
+          return next;
+        }
+
         if (next >= result.gantt.length) {
           setIsRunning(false);
           setAnimationDone(true);
         }
+
         return next;
       });
     };
@@ -162,6 +198,12 @@ const SchedulingPage = () => {
     setVisibleBlocks(0);
     setCurrentTime(0);
     setAnimationDone(false);
+    setIsPaused(false);
+
+    // ✅ add this
+    setQuizScore(0);
+    setQuizTotal(0);
+    setStepIndex(-1);
   };
 
   const maxTime = result ? Math.max(...result.gantt.map(b => b.end), 1) : 1;
@@ -351,6 +393,18 @@ const SchedulingPage = () => {
 
         {/* Right sidebar: controls + info */}
         <div className="space-y-3">
+          <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
+            <QuizToggle
+              active={quizActive}
+              onToggle={() => setQuizActive(prev => !prev)}
+              accent="scheduling"
+            />
+            <QuizScoreBadge
+              score={quizScore}
+              total={quizTotal}
+              accent="scheduling"
+            />
+          </div>
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">Algorithm</h3>
             <div className="flex flex-wrap gap-1.5">
@@ -362,6 +416,24 @@ const SchedulingPage = () => {
               ))}
             </div>
           </div>
+          {quizActive && currentQuestion && (
+            <QuizCard
+              question={currentQuestion}
+              onAnswer={handleAnswer}
+              accent="scheduling"
+            />
+          )}
+          {quizActive && !currentQuestion && quizTotal > 0 && (
+            <QuizSummary
+              score={quizScore}
+              total={quizTotal}
+              onRetry={() => {
+                setQuizScore(0);
+                setQuizTotal(0);
+              }}
+              accent="scheduling"
+            />
+          )}
 
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">Input</h3>

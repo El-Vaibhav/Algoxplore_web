@@ -25,6 +25,8 @@ import MazeInput from "@/components/dp/MazeInput";
 import { sudokuSteps, defaultSudoku } from "@/lib/dpAlgorithms";
 import SudokuViz from "@/components/dp/SudokuViz";
 import ComplexityPanel from "@/components/ComplexityPanel";
+import { QuizToggle, QuizScoreBadge, QuizCard, QuizSummary } from "@/components/QuizMode";
+import { dpQuiz } from "@/lib/quizGenerators";
 
 type AlgoType = "knapsack" | "fractional" | "lcs" | "mcm" | "nqueen" | "ratmaze" | "sudoku";
 
@@ -449,6 +451,26 @@ const DPPage = () => {
   const [sudokuBoard, setSudokuBoard] = useState(() => {
     return generateRandomSudoku(4);
   });
+  const [quizActive, setQuizActive] = useState(false);
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizTotal, setQuizTotal] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const currentQuestion =
+    quizActive && currentStep >= 0 && currentStep < steps.length
+      ? dpQuiz(currentStep, steps, algo)
+      : null;
+
+  const handleAnswer = (correct: boolean) => {
+    setQuizTotal(prev => prev + 1);
+    if (correct) setQuizScore(prev => prev + 1);
+
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    setIsPaused(false);
+    setIsRunning(true);
+  };
+
 
   // Inputs state
   const [knapsackItems, setKnapsackItems] = useState<KnapsackItem[]>(() => randomKnapsackItems().items);
@@ -513,7 +535,7 @@ const DPPage = () => {
     if (
       !isRunning ||
       currentStep >= steps.length - 1 ||
-      steps[currentStep]?.done
+      steps[currentStep]?.done || isPaused
     ) {
       if (isRunning && currentStep >= steps.length - 1) setIsRunning(false);
       return;
@@ -521,7 +543,21 @@ const DPPage = () => {
     const delay = algo === "nqueen"
       ? 100 * speed  // faster for backtracking
       : 600 * speed;
-    timerRef.current = setTimeout(() => setCurrentStep(s => s + 1), delay);
+    timerRef.current = setTimeout(() => {
+      const nextStep = currentStep + 1;
+
+      const question =
+        quizActive ? dpQuiz(nextStep, steps, algo) : null;
+
+      if (quizActive && question) {
+        setCurrentStep(nextStep);
+        setIsPaused(true);
+        setIsRunning(false);
+        return;
+      }
+
+      setCurrentStep(s => s + 1);
+    }, delay);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [isRunning, currentStep, steps.length, speed]);
 
@@ -552,6 +588,9 @@ const DPPage = () => {
     stopAnimation();
     setSteps([]);
     setCurrentStep(-1);
+    setQuizScore(0);
+    setQuizTotal(0);
+    setIsPaused(false);
     // Generate new random inputs for current algo
     switch (algo) {
       case "knapsack": { const r = randomKnapsackItems(); setKnapsackItems(r.items); setKnapsackCap(r.capacity); break; }
@@ -681,11 +720,42 @@ const DPPage = () => {
         </div>
 
         <div className="space-y-8 mt-14">
+          <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
+            <QuizToggle
+              active={quizActive}
+              onToggle={() => setQuizActive(prev => !prev)}
+              accent="dp"
+            />
+            <QuizScoreBadge
+              score={quizScore}
+              total={quizTotal}
+              accent="dp"
+            />
+          </div>
+
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <Brain className="w-4 h-4 text-dp" />
               {info.name}
             </h3>
+            {quizActive && currentQuestion && (
+              <QuizCard
+                question={currentQuestion}
+                onAnswer={handleAnswer}
+                accent="dp"
+              />
+            )}
+            {quizActive && !currentQuestion && quizTotal > 0 && (
+              <QuizSummary
+                score={quizScore}
+                total={quizTotal}
+                onRetry={() => {
+                  setQuizScore(0);
+                  setQuizTotal(0);
+                }}
+                accent="dp"
+              />
+            )}
             <div className="text-xs text-muted-foreground">
               {algo === "knapsack" && <><div>Capacity: <span className="text-foreground font-mono">{knapsackCap}</span></div><div>Items: <span className="text-foreground font-mono">{knapsackItems.length}</span></div></>}
               {algo === "fractional" && <><div>Capacity: <span className="text-foreground font-mono">{fractionalCap}</span></div><div>Items: <span className="text-foreground font-mono">{fractionalItems.length}</span></div><div>Strategy: <span className="text-foreground font-mono">Greedy by ratio</span></div></>}

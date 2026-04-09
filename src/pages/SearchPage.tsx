@@ -5,6 +5,12 @@ import SpeedControl from "@/components/SpeedControl";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Pause, RotateCcw, Compass, Shuffle } from "lucide-react";
+import { QuizToggle, QuizScoreBadge, QuizCard, QuizSummary } from "@/components/QuizMode";
+import {
+  binarySearchQuiz,
+  aStarQuiz,
+  aoStarQuiz
+} from "@/lib/quizGenerators";
 import {
   BinarySearchStep,
   AStarStep,
@@ -56,6 +62,11 @@ const SearchPage = () => {
   const [end, setEnd] = useState({ row: 7, col: 22 });
   const [placing, setPlacing] = useState<"start" | "end" | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [quizActive, setQuizActive] = useState(false);
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizTotal, setQuizTotal] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
 
   // Binary Search state
   const [bsSteps, setBsSteps] = useState<BinarySearchStep[]>([]);
@@ -76,6 +87,35 @@ const SearchPage = () => {
   // AO* state
   const [aoSteps, setAoSteps] = useState<AOStarStep[]>(() => aoStarSteps());
   const [aoStep, setAoStep] = useState(0);
+
+  const currentQuestion = (() => {
+    if (!quizActive) return null;
+
+    if (selectedAlgo === "binary-search" && bsStep >= 0) {
+      return binarySearchQuiz(bsStep, bsSteps);
+    }
+
+    if (selectedAlgo === "a-star" && asStep >= 0) {
+      return aStarQuiz(asStep, asSteps as any);
+    }
+
+    if (selectedAlgo === "ao-star" && aoStep >= 0) {
+      return aoStarQuiz(aoStep, aoSteps as any);
+    }
+
+    return null;
+  })();
+
+  const handleAnswer = (correct: boolean) => {
+    setQuizTotal(prev => prev + 1);
+    if (correct) setQuizScore(prev => prev + 1);
+
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    setIsPaused(false);
+    setIsRunning(true);
+    setCurrentStep(prev => prev + 1);
+  };
 
   const stopAnimation = useCallback(() => {
     setIsRunning(false);
@@ -103,12 +143,37 @@ const SearchPage = () => {
   useEffect(() => {
     const step = getCurrentStep();
     const max = getMaxSteps();
-    if (!isRunning || step >= max - 1) {
+    if (!isRunning || step >= max - 1 || isPaused) {
       if (isRunning && step >= max - 1) setIsRunning(false);
       return;
     }
     const delay = 200 * speed;
-    timerRef.current = setTimeout(() => setCurrentStep(s => s + 1), delay);
+    timerRef.current = setTimeout(() => {
+      const nextStep = step + 1;
+
+      let question = null;
+
+      if (quizActive) {
+        if (selectedAlgo === "binary-search") {
+          question = binarySearchQuiz(step, bsSteps);
+        }
+        else if (selectedAlgo === "a-star") {
+          question = aStarQuiz(step, asSteps as any);
+        }
+        else if (selectedAlgo === "ao-star") {
+          question = aoStarQuiz(step, aoSteps as any);
+        }
+      }
+
+      if (quizActive && question) {
+        setCurrentStep(() => nextStep);
+        setIsPaused(true);
+        setIsRunning(false);
+        return;
+      }
+
+      setCurrentStep(s => s + 1);
+    }, delay);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [isRunning, getCurrentStep, getMaxSteps, speed, setCurrentStep]);
 
@@ -160,6 +225,11 @@ const SearchPage = () => {
     const steps = aoStarSteps();
     setAoSteps(steps);
     setAoStep(0);
+
+    setQuizScore(0);
+    setQuizTotal(0);
+    setIsPaused(false);
+    setQuizActive(false);
   };
 
   const randomizeWalls = () => {
@@ -175,6 +245,18 @@ const SearchPage = () => {
     <AlgoLayout title="Search & Pathfinding">
       <div className="grid lg:grid-cols-[1fr_300px] gap-4 md:gap-6">
         <div className="space-y-4">
+          <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
+            <QuizToggle
+              active={quizActive}
+              onToggle={() => setQuizActive(prev => !prev)}
+              accent="search"
+            />
+            <QuizScoreBadge
+              score={quizScore}
+              total={quizTotal}
+              accent="search"
+            />
+          </div>
           <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-3 md:p-6 min-h-[420px] md:min-h-[480px] relative overflow-hidden">
             <div className="absolute top-0 left-1/4 w-64 h-64 bg-search/5 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-search/3 rounded-full blur-[80px] pointer-events-none" />
@@ -246,6 +328,24 @@ const SearchPage = () => {
               ))}
             </div>
           </div>
+          {quizActive && currentQuestion && (
+            <QuizCard
+              question={currentQuestion}
+              onAnswer={handleAnswer}
+              accent="search"
+            />
+          )}
+          {quizActive && !currentQuestion && quizTotal > 0 && (
+            <QuizSummary
+              score={quizScore}
+              total={quizTotal}
+              onRetry={() => {
+                setQuizScore(0);
+                setQuizTotal(0);
+              }}
+              accent="search"
+            />
+          )}
 
           {selectedAlgo === "binary-search" && (
             <div className="rounded-xl border border-border bg-card p-4 space-y-3">
@@ -369,47 +469,47 @@ function BinarySearchViz({
     <div className="flex flex-col items-center justify-start h-full gap-6 pt-10 md:pt-24 lg:pt-40">
       <div className="w-full overflow-x-auto">
         <div className="flex gap-1.5 items-end w-max mx-auto px-1">
-        {arr.map((val, idx) => {
-          let bgClass = "bg-secondary/60";
-          let textClass = "text-muted-foreground";
+          {arr.map((val, idx) => {
+            let bgClass = "bg-secondary/60";
+            let textClass = "text-muted-foreground";
 
-          if (step) {
-            if (idx === step.mid) {
-              bgClass = step.found ? "bg-success" : "bg-search";
-              textClass = "text-white";
-            } else if (idx >= step.low && idx <= step.high) {
-              bgClass = "bg-search/20 border-search/30";
-              textClass = "text-search";
-            } else {
-              bgClass = "bg-secondary/30";
-              textClass = "text-muted-foreground/40";
+            if (step) {
+              if (idx === step.mid) {
+                bgClass = step.found ? "bg-success" : "bg-search";
+                textClass = "text-white";
+              } else if (idx >= step.low && idx <= step.high) {
+                bgClass = "bg-search/20 border-search/30";
+                textClass = "text-search";
+              } else {
+                bgClass = "bg-secondary/30";
+                textClass = "text-muted-foreground/40";
+              }
             }
-          }
 
-          return (
-            <motion.div
-              key={idx}
-              layout
-              className={`flex flex-col items-center gap-1`}
-            >
+            return (
               <motion.div
-                className={`w-8 h-8 md:w-10 md:h-10 rounded-lg border border-border ${bgClass} flex items-center justify-center text-[10px] md:text-xs font-mono font-semibold ${textClass}`}
-                animate={{ scale: idx === step?.mid ? 1.15 : 1 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                key={idx}
+                layout
+                className={`flex flex-col items-center gap-1`}
               >
-                {val}
+                <motion.div
+                  className={`w-8 h-8 md:w-10 md:h-10 rounded-lg border border-border ${bgClass} flex items-center justify-center text-[10px] md:text-xs font-mono font-semibold ${textClass}`}
+                  animate={{ scale: idx === step?.mid ? 1.15 : 1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  {val}
+                </motion.div>
+                <span className="text-[9px] text-muted-foreground font-mono">{idx}</span>
+                {step && (
+                  <div className="text-[8px] font-mono h-3">
+                    {idx === step.low && <span className="text-search">low</span>}
+                    {idx === step.mid && <span className="text-warning">mid</span>}
+                    {idx === step.high && <span className="text-search">high</span>}
+                  </div>
+                )}
               </motion.div>
-              <span className="text-[9px] text-muted-foreground font-mono">{idx}</span>
-              {step && (
-                <div className="text-[8px] font-mono h-3">
-                  {idx === step.low && <span className="text-search">low</span>}
-                  {idx === step.mid && <span className="text-warning">mid</span>}
-                  {idx === step.high && <span className="text-search">high</span>}
-                </div>
-              )}
-            </motion.div>
-          );
-        })}
+            );
+          })}
         </div>
       </div>
       {!step && (
@@ -513,83 +613,83 @@ function AOStarViz({ steps, currentStep }: { steps: AOStarStep[]; currentStep: n
   return (
     <div className="w-full h-full overflow-x-auto">
       <svg width="100%" height="100%" viewBox="0 0 800 320" className="min-w-[720px] overflow-visible">
-      {/* Edges */}
-      {edges.map((e, i) => {
-        const from = nodes.find(n => n.id === e.from);
-        const to = nodes.find(n => n.id === e.to);
-        if (!from || !to) return null;
-        const isBestPath = from.bestGroup === e.groupIdx && from.solved;
-        return (
-          <motion.line
-            key={`edge-${i}`}
-            x1={from.x} y1={from.y + 20}
-            x2={to.x} y2={to.y - 20}
-            stroke={isBestPath ? "hsl(var(--search))" : "hsl(var(--border))"}
-            strokeWidth={isBestPath ? 2.5 : 1.5}
-            strokeDasharray={from.children[e.groupIdx]?.length > 1 ? "none" : "none"}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: i * 0.05 }}
-          />
-        );
-      })}
-
-      {/* AND arcs */}
-      {nodes.filter(n => n.children.some(g => g.length > 1)).map(n =>
-        n.children.map((group, gi) => {
-          if (group.length <= 1) return null;
-          const children = group.map(id => nodes.find(nd => nd.id === id)!).filter(Boolean);
-          if (children.length < 2) return null;
-          const midX = (children[0].x + children[children.length - 1].x) / 2;
-          const midY = (n.y + children[0].y) / 2;
+        {/* Edges */}
+        {edges.map((e, i) => {
+          const from = nodes.find(n => n.id === e.from);
+          const to = nodes.find(n => n.id === e.to);
+          if (!from || !to) return null;
+          const isBestPath = from.bestGroup === e.groupIdx && from.solved;
           return (
-            <motion.path
-              key={`arc-${n.id}-${gi}`}
-              d={`M ${children[0].x} ${midY} Q ${midX} ${midY - 15} ${children[children.length - 1].x} ${midY}`}
-              fill="none"
-              stroke={n.bestGroup === gi && n.solved ? "hsl(var(--search))" : "hsl(var(--muted-foreground))"}
-              strokeWidth={1.5}
+            <motion.line
+              key={`edge-${i}`}
+              x1={from.x} y1={from.y + 20}
+              x2={to.x} y2={to.y - 20}
+              stroke={isBestPath ? "hsl(var(--search))" : "hsl(var(--border))"}
+              strokeWidth={isBestPath ? 2.5 : 1.5}
+              strokeDasharray={from.children[e.groupIdx]?.length > 1 ? "none" : "none"}
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.6 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: i * 0.05 }}
             />
           );
-        })
-      )}
+        })}
 
-      {/* Nodes */}
-      {nodes.map(n => {
-        const isSolved = solvedNodes.includes(n.id);
-        const isCurrent = currentNode === n.id;
-        return (
-          <motion.g key={n.id} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200 }}>
-            {isCurrent && (
-              <motion.circle cx={n.x} cy={n.y} r={28} fill="none" stroke="hsl(var(--search))" strokeWidth={2} opacity={0.4}
-                animate={{ r: [28, 34, 28], opacity: [0.4, 0.1, 0.4] }} transition={{ duration: 1, repeat: Infinity }} />
-            )}
-            <circle cx={n.x} cy={n.y} r={22}
-              fill={isCurrent ? "hsl(var(--search))" : isSolved ? "hsl(var(--success))" : "hsl(var(--card))"}
-              stroke={isCurrent ? "hsl(var(--search))" : isSolved ? "hsl(var(--success))" : "hsl(var(--border))"}
-              strokeWidth={2}
-            />
-            <text x={n.x} y={n.y - 2} textAnchor="middle" dominantBaseline="central"
-              fill={isCurrent || isSolved ? "hsl(var(--background))" : "hsl(var(--foreground))"}
-              fontSize={14} fontWeight={700} fontFamily="Space Grotesk">
-              {n.label}
-            </text>
-            <text x={n.x} y={n.y + 12} textAnchor="middle" fontSize={8}
-              fill={isCurrent || isSolved ? "hsl(var(--background))" : "hsl(var(--muted-foreground))"}
-              fontFamily="JetBrains Mono">
-              c:{n.cost}
-            </text>
-            {n.type !== "LEAF" && (
-              <text x={n.x + 26} y={n.y - 14} textAnchor="middle" fontSize={8}
-                fill="hsl(var(--muted-foreground))" fontFamily="JetBrains Mono">
-                {n.type}
+        {/* AND arcs */}
+        {nodes.filter(n => n.children.some(g => g.length > 1)).map(n =>
+          n.children.map((group, gi) => {
+            if (group.length <= 1) return null;
+            const children = group.map(id => nodes.find(nd => nd.id === id)!).filter(Boolean);
+            if (children.length < 2) return null;
+            const midX = (children[0].x + children[children.length - 1].x) / 2;
+            const midY = (n.y + children[0].y) / 2;
+            return (
+              <motion.path
+                key={`arc-${n.id}-${gi}`}
+                d={`M ${children[0].x} ${midY} Q ${midX} ${midY - 15} ${children[children.length - 1].x} ${midY}`}
+                fill="none"
+                stroke={n.bestGroup === gi && n.solved ? "hsl(var(--search))" : "hsl(var(--muted-foreground))"}
+                strokeWidth={1.5}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.6 }}
+              />
+            );
+          })
+        )}
+
+        {/* Nodes */}
+        {nodes.map(n => {
+          const isSolved = solvedNodes.includes(n.id);
+          const isCurrent = currentNode === n.id;
+          return (
+            <motion.g key={n.id} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200 }}>
+              {isCurrent && (
+                <motion.circle cx={n.x} cy={n.y} r={28} fill="none" stroke="hsl(var(--search))" strokeWidth={2} opacity={0.4}
+                  animate={{ r: [28, 34, 28], opacity: [0.4, 0.1, 0.4] }} transition={{ duration: 1, repeat: Infinity }} />
+              )}
+              <circle cx={n.x} cy={n.y} r={22}
+                fill={isCurrent ? "hsl(var(--search))" : isSolved ? "hsl(var(--success))" : "hsl(var(--card))"}
+                stroke={isCurrent ? "hsl(var(--search))" : isSolved ? "hsl(var(--success))" : "hsl(var(--border))"}
+                strokeWidth={2}
+              />
+              <text x={n.x} y={n.y - 2} textAnchor="middle" dominantBaseline="central"
+                fill={isCurrent || isSolved ? "hsl(var(--background))" : "hsl(var(--foreground))"}
+                fontSize={14} fontWeight={700} fontFamily="Space Grotesk">
+                {n.label}
               </text>
-            )}
-          </motion.g>
-        );
-      })}
+              <text x={n.x} y={n.y + 12} textAnchor="middle" fontSize={8}
+                fill={isCurrent || isSolved ? "hsl(var(--background))" : "hsl(var(--muted-foreground))"}
+                fontFamily="JetBrains Mono">
+                c:{n.cost}
+              </text>
+              {n.type !== "LEAF" && (
+                <text x={n.x + 26} y={n.y - 14} textAnchor="middle" fontSize={8}
+                  fill="hsl(var(--muted-foreground))" fontFamily="JetBrains Mono">
+                  {n.type}
+                </text>
+              )}
+            </motion.g>
+          );
+        })}
       </svg>
     </div>
 

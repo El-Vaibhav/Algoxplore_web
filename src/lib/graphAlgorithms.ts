@@ -590,11 +590,20 @@ export function prim(
     })
   }
 
+  const totalWeight = mstEdges.reduce((sum, [u, v]) => {
+    const edge = edges.find(
+      e => (e.from === u && e.to === v) || (e.from === v && e.to === u)
+    );
+    return sum + (edge?.weight ?? 1);
+  }, 0);
+
   steps.push({
     visitedNodes: [...selected],
     visitedEdges: [...mstEdges],
-    description: "Minimum Spanning Tree completed"
-  })
+    currentNode: Array.from(selected).slice(-1)[0],
+    description: `MST completed — Total Weight = ${totalWeight}`
+  });
+
 
   return steps
 }
@@ -640,6 +649,20 @@ export function kruskal(
       })
     }
   }
+  const totalWeight = mstEdges.reduce((sum, [u, v]) => {
+    const edge = edges.find(
+      e => (e.from === u && e.to === v) || (e.from === v && e.to === u)
+    );
+    return sum + (edge?.weight ?? 1);
+  }, 0);
+
+  steps.push({
+    visitedNodes: nodes.map(n => n.id),
+    visitedEdges: [...mstEdges],
+    currentNode: mstEdges[mstEdges.length - 1]?.[1],
+    description: `MST completed — Total Weight = ${totalWeight}`
+  });
+
 
   return steps
 }
@@ -812,8 +835,9 @@ export function kosaraju(
       steps.push({
         visitedNodes: [...comp],
         visitedEdges: [],
+        currentNode: comp[comp.length - 1], // ✅ important
         components: { ...component },
-        description: `Component ${compId + 1} found`
+        description: `Component ${compId + 1} completed`
       })
 
       compId++
@@ -823,6 +847,7 @@ export function kosaraju(
   steps.push({
     visitedNodes: nodes.map(n => n.id),
     visitedEdges: [],
+    currentNode: nodes[nodes.length - 1]?.id ?? 0, // ✅ fallback
     components: { ...component },
     description: `Total SCCs found: ${compId}`
   })

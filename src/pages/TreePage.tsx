@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { heapConstructionSteps } from "@/lib/treeAlgorithms";
 import { getLevelOrderValues } from "@/lib/treeAlgorithms";
 import { avlInsertSteps } from "@/lib/treeAlgorithms";
+import { QuizToggle, QuizScoreBadge, QuizCard, QuizSummary } from "@/components/QuizMode";
+import { QuizQuestion, treeQuiz } from "@/lib/quizGenerators";
 import {
   TreeNode,
   AnimationStep,
@@ -136,6 +138,26 @@ const TreePage = () => {
   const [speed, setSpeed] = useState(5);
   const [inputValue, setInputValue] = useState("");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [quizActive, setQuizActive] = useState(false);
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizTotal, setQuizTotal] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [activeQuestion, setActiveQuestion] = useState<QuizQuestion | null>(null);
+
+  const handleAnswer = (correct: boolean) => {
+    setQuizTotal(prev => prev + 1);
+    if (correct) setQuizScore(prev => prev + 1);
+
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    setIsPaused(false);   // resume
+    setIsRunning(true);
+  };
+
+  const currentQuestion =
+    quizActive && currentStep >= 0 && currentStep < steps.length
+      ? treeQuiz(currentStep, steps)
+      : null;
 
   const currentStepData = currentStep >= 0 && currentStep < steps.length ? steps[currentStep] : null;
   const highlighted = currentStepData?.highlighted ?? [];
@@ -149,13 +171,27 @@ const TreePage = () => {
   }, []);
 
   useEffect(() => {
-    if (!isRunning || currentStep >= steps.length - 1) {
+    if (!isRunning || currentStep >= steps.length - 1 || isPaused) {
       if (isRunning && currentStep >= steps.length - 1) setIsRunning(false);
       return;
     }
     const delay = 600 * speed;
     timerRef.current = setTimeout(() => {
-      setCurrentStep((s) => s + 1);
+      const nextStep = currentStep + 1;
+
+      // check quiz
+      const question =
+        quizActive ? treeQuiz(nextStep, steps) : null;
+
+      if (quizActive && question) {
+        setCurrentStep(nextStep);
+        setActiveQuestion(question)
+        setIsPaused(true);
+        setIsRunning(false);
+        return;
+      }
+
+      setCurrentStep(nextStep);
     }, delay);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [isRunning, currentStep, steps.length, speed]);
@@ -255,6 +291,10 @@ const TreePage = () => {
     setSteps([]);
     setCurrentStep(-1);
     setInputValue("");
+
+    setQuizScore(0);
+    setQuizTotal(0);
+    setIsPaused(false);
   };
 
   const needsInput = ["bst-insert", "bst-search", "bst-delete"].includes(selectedAlgo);
@@ -281,6 +321,47 @@ const TreePage = () => {
               width={1000}
               height={600}
             />
+          </div>
+          {/* ✅ QUIZ TOGGLE OVERLAY */}
+          <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+            <QuizToggle
+              active={quizActive}
+              onToggle={() => setQuizActive(prev => !prev)}
+              accent="tree"
+            />
+            <QuizScoreBadge
+              score={quizScore}
+              total={quizTotal}
+              accent="tree"
+            />
+            {/* ✅ QUIZ CARD OVERLAY */}
+            {quizActive && activeQuestion && (
+              <QuizCard
+                question={activeQuestion}
+                onAnswer={(correct) => {
+                  handleAnswer(correct);
+                  setActiveQuestion(null);   // ✅ clear after answer
+                }}
+                accent="tree"
+              />
+            )}
+            {quizActive &&
+              currentStep >= steps.length - 1 &&
+              !isRunning &&
+              !currentQuestion &&
+              quizTotal > 0 && (
+                <div className="absolute top-16 right-4 w-[260px] z-20">
+                  <QuizSummary
+                    score={quizScore}
+                    total={quizTotal}
+                    onRetry={() => {
+                      setQuizScore(0);
+                      setQuizTotal(0);
+                    }}
+                    accent="tree"
+                  />
+                </div>
+              )}
           </div>
 
           {/* Status */}
@@ -310,7 +391,6 @@ const TreePage = () => {
 
         {/* ================= ALGORITHM PANEL ================= */}
         <div className="rounded-xl border border-border bg-card p-4 md:p-5 space-y-5 h-full flex flex-col">
-
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <TreeDeciduous className="w-4 h-4 text-tree" />
             Algorithm
@@ -350,8 +430,6 @@ const TreePage = () => {
           ))}
 
         </div>
-
-
         {/* ================= LEFT CONTROLS ================= */}
         <div className="flex gap-4 flex-wrap">
 

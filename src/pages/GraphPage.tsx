@@ -5,6 +5,8 @@ import SpeedControl from "@/components/SpeedControl";
 import StepPanel from "@/components/steppanel";
 import { useNavigate } from "react-router-dom";
 import ComplexityPanel from "@/components/ComplexityPanel";
+import { QuizToggle, QuizScoreBadge, QuizCard, QuizSummary } from "@/components/QuizMode";
+import { graphQuiz, QuizQuestion } from "@/lib/quizGenerators";
 
 import {
   generateRandomGraph,
@@ -35,6 +37,7 @@ const algoFns: Record<string, (...args: any[]) => GraphStep[]> = {
   "Kosaraju's": kosaraju,
 };
 
+
 const GraphPage = () => {
   const navigate = useNavigate();
   const [algo, setAlgo] = useState("BFS");
@@ -57,6 +60,28 @@ const GraphPage = () => {
   const timerRef = useRef<number | null>(null);
   const stepsRef = useRef<GraphStep[]>([]);
   const stepIdxRef = useRef(0);
+  const [quizActive, setQuizActive] = useState(false);
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizTotal, setQuizTotal] = useState(0);
+  const [isAlgoFinished, setIsAlgoFinished] = useState(false);
+  const currentQuestion =
+    quizActive && stepIndex >= 0 && stepIndex < stepsRef.current.length
+      ? graphQuiz(stepIndex, stepsRef.current)
+      : null;
+  const handleAnswer = (correct: boolean) => {
+    setQuizTotal(prev => prev + 1);
+    if (correct) setQuizScore(prev => prev + 1);
+
+    // clear old timer (VERY IMPORTANT)
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    stepIdxRef.current++;
+
+    // resume animation
+    timerRef.current = window.setTimeout(() => {
+      animate();
+    }, 300);
+  };
 
   const stopAnimation = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -65,12 +90,50 @@ const GraphPage = () => {
   }, []);
 
   const animate = useCallback(() => {
-    if (stepIdxRef.current >= stepsRef.current.length) { stopAnimation(); return; }
-    setCurrentStep(stepsRef.current[stepIdxRef.current]);
-    setStepIndex(stepIdxRef.current);
+    if (stepIdxRef.current >= stepsRef.current.length) {
+      const lastIdx = stepsRef.current.length - 1;
+      setCurrentStep(stepsRef.current[lastIdx]);
+      setStepIndex(lastIdx);
+
+      setIsAlgoFinished(true);
+      stopAnimation();
+      return;
+    }
+
+    const idx = stepIdxRef.current;
+
+    setCurrentStep(stepsRef.current[idx]);
+    setStepIndex(idx);
+
+    // ✅ compute question BEFORE increment
+    let nextQuestion = null;
+
+    if (quizActive) {
+      nextQuestion = graphQuiz(idx, stepsRef.current);
+
+      // 🔥 KEEP MOVING until you find a valid question
+      while (
+        quizActive &&
+        !nextQuestion &&
+        stepIdxRef.current < stepsRef.current.length - 1
+      ) {
+        stepIdxRef.current++;
+        nextQuestion = graphQuiz(stepIdxRef.current, stepsRef.current);
+      }
+    }
+
+    // pause ONLY if valid question found
+    if (quizActive && nextQuestion) {
+      setCurrentStep(stepsRef.current[stepIdxRef.current]);
+      setStepIndex(stepIdxRef.current);
+      return;
+    }
+
+    // ✅ NOW increment (only when continuing)
     stepIdxRef.current++;
+
     timerRef.current = window.setTimeout(animate, 600 * speed);
-  }, [speed, stopAnimation]);
+  }, [speed, stopAnimation, quizActive]);
 
   const startAlgo = useCallback(() => {
     stopAnimation();
@@ -94,8 +157,20 @@ const GraphPage = () => {
 
   const reset = useCallback(() => {
     stopAnimation();
+
+    // ✅ Clear refs safely
+    stepsRef.current = [];
+    stepIdxRef.current = 0;
+
     setCurrentStep(null);
     setStepIndex(-1);
+    setIsRunning(false);
+
+    // quiz reset
+    setQuizScore(0);
+    setQuizTotal(0);
+    setIsAlgoFinished(false);
+
   }, [stopAnimation]);
 
   const generateNewGraph = () => {
@@ -146,8 +221,6 @@ const GraphPage = () => {
       reset();
     } catch { /* ignore */ }
   };
-
-  useEffect(() => { return () => { if (timerRef.current) clearTimeout(timerRef.current); }; }, []);
 
   const info = graphAlgoInfo[algo];
   const svgW = 620;
@@ -323,6 +396,18 @@ const GraphPage = () => {
 
         {/* Right Sidebar: Controls stacked */}
         <div className="space-y-3">
+          <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
+            <QuizToggle
+              active={quizActive}
+              onToggle={() => setQuizActive(prev => !prev)}
+              accent="graph"
+            />
+            <QuizScoreBadge
+              score={quizScore}
+              total={quizTotal}
+              accent="graph"
+            />
+          </div>
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">Algorithm</h3>
             <div className="flex flex-wrap gap-1.5">
@@ -334,6 +419,26 @@ const GraphPage = () => {
               ))}
             </div>
           </div>
+          {quizActive && currentQuestion && (
+            <QuizCard
+              question={currentQuestion}
+              onAnswer={handleAnswer}
+              accent="graph"
+            />
+          )}
+
+          {quizActive && isAlgoFinished && quizTotal > 0 && (
+            <QuizSummary
+              score={quizScore}
+              total={quizTotal}
+              onRetry={() => {
+                setQuizScore(0);
+                setQuizTotal(0);
+                setIsAlgoFinished(false);
+              }}
+              accent="graph"
+            />
+          )}
 
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">Graph Input</h3>

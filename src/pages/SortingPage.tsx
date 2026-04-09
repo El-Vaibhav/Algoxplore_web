@@ -7,6 +7,9 @@ import {
 } from "@/lib/sortingAlgorithms";
 import { useNavigate } from "react-router-dom";
 import ComplexityPanel from "@/components/ComplexityPanel";
+import { QuizToggle, QuizScoreBadge, QuizCard, QuizSummary } from "@/components/QuizMode";
+import { sortingQuiz } from "@/lib/quizGenerators";
+
 const algorithms = ["Bubble Sort", "Insertion Sort", "Selection Sort", "Merge Sort", "Quick Sort"];
 const algoFns: Record<string, (arr: number[]) => SortStep[]> = {
   "Bubble Sort": bubbleSort, "Insertion Sort": insertionSort, "Selection Sort": selectionSort,
@@ -30,6 +33,26 @@ const SortingPage = () => {
   const stepsRef = useRef<SortStep[]>([]);
   const stepIndexRef = useRef(0);
   const navigate = useNavigate();
+  const [quizActive, setQuizActive] = useState(false);
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizTotal, setQuizTotal] = useState(0);
+  const [stepIndex, setStepIndex] = useState(-1);
+
+  const currentQuestion =
+    quizActive && stepIndex >= 0 && stepIndex < stepsRef.current.length
+      ? sortingQuiz(stepIndex, stepsRef.current)
+      : null;
+
+  const handleAnswer = (correct: boolean) => {
+    setQuizTotal(prev => prev + 1);
+    if (correct) setQuizScore(prev => prev + 1);
+
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    timerRef.current = window.setTimeout(() => {
+      animate();
+    }, 300);
+  };
 
   const stopAnimation = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -38,11 +61,27 @@ const SortingPage = () => {
   }, []);
 
   const animate = useCallback(() => {
-    if (stepIndexRef.current >= stepsRef.current.length) { stopAnimation(); return; }
-    setCurrentStep(stepsRef.current[stepIndexRef.current]);
+    if (stepIndexRef.current >= stepsRef.current.length) {
+      stopAnimation();
+      return;
+    }
+
+    const idx = stepIndexRef.current;
+
+    setCurrentStep(stepsRef.current[idx]);
+    setStepIndex(idx);
+
     stepIndexRef.current++;
+
+    const question =
+      quizActive
+        ? sortingQuiz(idx, stepsRef.current)
+        : null;
+
+    if (quizActive && question) return;
+
     timerRef.current = window.setTimeout(animate, 50 * speed);
-  }, [speed, stopAnimation]);
+  }, [speed, stopAnimation, quizActive]);
 
   const startSort = useCallback(() => {
     stopAnimation();
@@ -56,7 +95,16 @@ const SortingPage = () => {
   const reset = useCallback(() => {
     stopAnimation();
     setCurrentStep(null);
-    if (inputMode === "random") setArray(generateRandomArray(arraySize, 100));
+    setStepIndex(-1);
+
+    if (inputMode === "random") {
+      setArray(generateRandomArray(arraySize, 100));
+    }
+
+    // ✅ reset quiz
+    setQuizScore(0);
+    setQuizTotal(0);
+
   }, [stopAnimation, inputMode, arraySize]);
 
   const handleCustomInput = () => {
@@ -109,9 +157,23 @@ const SortingPage = () => {
         </div>
 
         {/* Right sidebar: controls */}
+
         <div className="space-y-3">
+          <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
+            <QuizToggle
+              active={quizActive}
+              onToggle={() => setQuizActive(prev => !prev)}
+              accent="sorting"
+            />
+            <QuizScoreBadge
+              score={quizScore}
+              total={quizTotal}
+              accent="sorting"
+            />
+          </div>
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">Algorithm</h3>
+
             <div className="flex flex-wrap gap-1.5">
               {algorithms.map(a => (
                 <button key={a} onClick={() => { setAlgo(a); stopAnimation(); setCurrentStep(null); }}
@@ -121,6 +183,24 @@ const SortingPage = () => {
               ))}
             </div>
           </div>
+          {quizActive && currentQuestion && (
+            <QuizCard
+              question={currentQuestion}
+              onAnswer={handleAnswer}
+              accent="sorting"
+            />
+          )}
+          {quizActive && !currentQuestion && quizTotal > 0 && (
+            <QuizSummary
+              score={quizScore}
+              total={quizTotal}
+              onRetry={() => {
+                setQuizScore(0);
+                setQuizTotal(0);
+              }}
+              accent="sorting"
+            />
+          )}
 
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">Input</h3>
@@ -181,7 +261,7 @@ const SortingPage = () => {
           </div>
         )}
       </div>
-        <ComplexityPanel category="sorting" accentClass="text-sorting" />
+      <ComplexityPanel category="sorting" accentClass="text-sorting" />
     </AlgoLayout>
   );
 };
