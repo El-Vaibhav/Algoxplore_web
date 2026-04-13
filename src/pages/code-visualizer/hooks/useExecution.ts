@@ -8,9 +8,8 @@ import type {
   Algorithm,
 } from "../types";
 
-// ✅ REAL BACKEND CALL
 async function executeCode(payload: ExecutionPayload): Promise<ExecutionStep[]> {
-  const res = await fetch("http://localhost:8000/execute", {
+  const res = await fetch("https://algoxplore-web.onrender.com/api/execute", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
