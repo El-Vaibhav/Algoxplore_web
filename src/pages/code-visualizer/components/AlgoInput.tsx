@@ -127,7 +127,7 @@ const GraphInput = ({
       try {
         const values = treeValuesRaw.split(",").map((s) => Number(s.trim()));
         if (values.some(isNaN)) return;
-        const op = algorithm.replace("bst_", "") as TreeInput["operation"];
+        const op = algorithm as TreeInput["operation"];
         onTreeChange({ values, operation: op, searchValue: searchVal, deleteValue: deleteVal });
       } catch { }
     }

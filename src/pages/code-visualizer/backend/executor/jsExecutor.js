@@ -156,13 +156,7 @@ async function runUserCode(code, algorithm, input) {
         const isGraphAlgo = ["dfs", "bfs", "prims", "kruskal", "toposort", "dijkstra"].includes(algorithm);
         const isSortingAlgo = ["bubble", "selection", "insertion", "merge", "quick"].includes(algorithm);
         const isSchedulingAlgo = ["fcfs", "sjf", "srtf", "roundrobin", "priority"].includes(algorithm);
-        const isTreeAlgo = [
-            "bst_insert",
-            "bst_search",
-            "bst_delete",
-            "inorder",
-            "preorder",
-            "postorder"
+        const isTreeAlgo = [ "insert", "search","delete", "inorder", "preorder", "postorder"
         ].includes(algorithm);;
         const isDPAlgo = ["knapsack", "lcs", "mcm"].includes(algorithm);
 
@@ -180,14 +174,14 @@ async function runUserCode(code, algorithm, input) {
                 invocation = `${algorithm}(arrival, burst);`;
             }
         } else if (isTreeAlgo) {
-            if (algorithm === "bst_insert") {
-                invocation = `bst_insert(values);`;
+            if (algorithm === "insert") {
+                invocation = `insert(values);`;
             }
-            else if (algorithm === "bst_search") {
-                invocation = `bst_search(values, searchValue);`;
+            else if (algorithm === "search") {
+                invocation = `search(values, searchValue);`;
             }
-            else if (algorithm === "bst_delete") {
-                invocation = `bst_delete(values, deleteValue);`;
+            else if (algorithm === "delete") {
+                invocation = `delete(values, deleteValue);`;
             }
             else {
                 // inorder / preorder / postorder

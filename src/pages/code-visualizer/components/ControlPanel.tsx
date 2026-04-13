@@ -27,7 +27,7 @@ const ALGO_OPTIONS: Record<AlgorithmCategory, { value: Algorithm; label: string 
     { value: "priority", label: "Priority" },
   ],
   tree: [
-    { value: "bst_insert", label: "BST_Insert" },
+    { value: "bst_insert", label: "Insert" },
     { value: "bst_search", label: "Search" },
     { value: "bst_delete", label: "Delete" },
     { value: "bst_inorder", label: "Inorder" },

@@ -466,7 +466,7 @@ const TEMPLATES: Record<string, string> = {
 }`,
 
   // ─── Tree Templates ─────────────────────
-  bst_insert: `function bst_insert(values) {
+  insert: `function insert(values) {
   let root = null;
 
   function insert(root, val) {
@@ -498,7 +498,7 @@ const TEMPLATES: Record<string, string> = {
   }
 }`,
 
-  bst_search: `function bst_search(values, searchValue) {
+  search: `function search(values, searchValue) {
   let root = null;
 
   function insert(root, val) {
@@ -538,7 +538,7 @@ const TEMPLATES: Record<string, string> = {
   search(root, searchValue, []);
 }`,
 
-  bst_delete: `function bst_delete(values, searchValue, deleteValue) {
+  delete: `function delete(values, searchValue, deleteValue) {
   let root = null;
 
   function insert(root, val) {
@@ -587,7 +587,7 @@ const TEMPLATES: Record<string, string> = {
   logStep("result", "Deleted " + deleteValue);
 }`,
 
-  bst_inorder: `function bst_inorder(values) {
+  inorder: `function inorder(values) {
   let root = null;
 
   function insert(root, val) {
@@ -617,7 +617,7 @@ const TEMPLATES: Record<string, string> = {
   logStep("result", "Inorder: " + result.join(", "));
 }`,
 
-  bst_preorder: `function bst_preorder(values) {
+  preorder: `function preorder(values) {
   let root = null;
 
   function insert(root, val) {
@@ -647,7 +647,7 @@ const TEMPLATES: Record<string, string> = {
   logStep("result", "Preorder: " + result.join(", "));
 }`,
 
-  bst_postorder: `function bst_postorder(values) {
+  postorder: `function postorder(values) {
   let root = null;
 
   function insert(root, val) {
