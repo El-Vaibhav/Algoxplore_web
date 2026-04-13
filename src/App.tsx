@@ -15,6 +15,8 @@ import SchedulingComparePage from "./pages/SchedulingComparePage.tsx";
 import TreePage from "@/pages/TreePage";
 import SearchPage from "@/pages/SearchPage";
 import DPPage from "@/pages/DPPage";
+import CodeVisualizerPage from "./pages/code-visualizer/index.tsx";
+
 
 const queryClient = new QueryClient();
 
@@ -36,6 +38,7 @@ const App = () => (
           <Route path="/search" element={<SearchPage />} />
           <Route path="/dp" element={<DPPage />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/code-visualizer" element={<CodeVisualizerPage />} />
         </Routes>
       </BrowserRouter>
       <Analytics />
