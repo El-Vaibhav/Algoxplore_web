@@ -259,8 +259,8 @@ const GraphInput = ({
 
   // ─── TREE UI ─────────────────────
   if (category === "tree") {
-    const needsSearch = algorithm === "bst_search";
-    const needsDelete = algorithm === "bst_delete";
+    const needsSearch = algorithm === "search";
+    const needsDelete = algorithm === "delete";
 
     return (
       <div className="flex flex-col gap-3">

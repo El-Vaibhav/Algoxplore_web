@@ -3,7 +3,7 @@ export type DPAlgorithm = "knapsack" | "lcs" | "mcm";
 export type GraphAlgorithm = "bfs" | "dfs" | "prims" | "kruskal" | "toposort" | "dijkstra";
 export type SortingAlgorithm = "bubble" | "selection" | "insertion" | "merge" | "quick";
 export type SchedulingAlgorithm = "fcfs" | "sjf" | "srtf" | "roundrobin" | "priority";
-export type TreeAlgorithm = "bst_insert" | "bst_search" | "bst_inorder" | "bst_preorder" | "bst_postorder" | "bst_delete";
+export type TreeAlgorithm = "insert" | "search" | "inorder" | "preorder" | "postorder" | "delete";
 export type Algorithm = GraphAlgorithm | SortingAlgorithm | SchedulingAlgorithm | TreeAlgorithm | DPAlgorithm;
 
 export interface GraphData {

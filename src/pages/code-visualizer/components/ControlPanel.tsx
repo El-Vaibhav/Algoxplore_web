@@ -27,12 +27,12 @@ const ALGO_OPTIONS: Record<AlgorithmCategory, { value: Algorithm; label: string 
     { value: "priority", label: "Priority" },
   ],
   tree: [
-    { value: "bst_insert", label: "Insert" },
-    { value: "bst_search", label: "Search" },
-    { value: "bst_delete", label: "Delete" },
-    { value: "bst_inorder", label: "Inorder" },
-    { value: "bst_preorder", label: "Preorder" },
-    { value: "bst_postorder", label: "Postorder" },
+    { value: "insert", label: "Insert" },
+    { value: "search", label: "Search" },
+    { value: "delete", label: "Delete" },
+    { value: "inorder", label: "Inorder" },
+    { value: "preorder", label: "Preorder" },
+    { value: "postorder", label: "Postorder" },
   ],
   dp: [
     { value: "knapsack", label: "Knapsack" },

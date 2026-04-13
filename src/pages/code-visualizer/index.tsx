@@ -13,7 +13,7 @@ const DEFAULT_ALGOS: Record<AlgorithmCategory, Algorithm> = {
   graph: "bfs",
   sorting: "bubble",
   scheduling: "fcfs",
-  tree: "bst_insert",
+  tree: "insert",
   dp: "knapsack",
 };
 
@@ -74,7 +74,7 @@ const CODE_DEFAULTS: Record<string, string> = {
   logStep("schedule_done", { gantt, waitingTime: wt, turnaroundTime: tat });
 }`,
 
-  bst_insert: `function bst_insert(values) {
+  insert: `function insert(values) {
   let root = null;
 
   function insert(root, val) {
