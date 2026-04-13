@@ -156,7 +156,14 @@ async function runUserCode(code, algorithm, input) {
         const isGraphAlgo = ["dfs", "bfs", "prims", "kruskal", "toposort", "dijkstra"].includes(algorithm);
         const isSortingAlgo = ["bubble", "selection", "insertion", "merge", "quick"].includes(algorithm);
         const isSchedulingAlgo = ["fcfs", "sjf", "srtf", "roundrobin", "priority"].includes(algorithm);
-        const isTreeAlgo = algorithm.startsWith("bst_");
+        const isTreeAlgo = [
+            "bst_insert",
+            "bst_search",
+            "bst_delete",
+            "inorder",
+            "preorder",
+            "postorder"
+        ].includes(algorithm);;
         const isDPAlgo = ["knapsack", "lcs", "mcm"].includes(algorithm);
 
         let invocation = "";
@@ -173,12 +180,24 @@ async function runUserCode(code, algorithm, input) {
                 invocation = `${algorithm}(arrival, burst);`;
             }
         } else if (isTreeAlgo) {
-            invocation = `${algorithm}(values, searchValue, deleteValue);`;
+            if (algorithm === "bst_insert") {
+                invocation = `bst_insert(values);`;
+            }
+            else if (algorithm === "bst_search") {
+                invocation = `bst_search(values, searchValue);`;
+            }
+            else if (algorithm === "bst_delete") {
+                invocation = `bst_delete(values, deleteValue);`;
+            }
+            else {
+                // inorder / preorder / postorder
+                invocation = `${algorithm}(values);`;
+            }
         }
         else if (isDPAlgo) {
             if (algorithm === "lcs") {
                 invocation = `lcs(s1, s2);`;
-            } 
+            }
             else if (algorithm === "mcm") {
                 invocation = `mcm(weights);`;
             }
