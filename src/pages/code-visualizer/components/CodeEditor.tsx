@@ -493,7 +493,7 @@ const TEMPLATES: Record<string, string> = {
   }
 
   for (const val of values) {
-    root = insert(root, val);
+    root = insert_node(root, val);
     logStep("tree_state", { tree: copyTree(root), highlightNode: val });
   }
 }`,
@@ -538,7 +538,7 @@ const TEMPLATES: Record<string, string> = {
   search(root, searchValue, []);
 }`,
 
-  delete: `function delete(values, deleteValue) {
+  delete: `function deleteNode(values, deleteValue) {
   let root = null;
 
   function insert(root, val) {
@@ -605,15 +605,15 @@ const TEMPLATES: Record<string, string> = {
   for (const val of values) root = insert(root, val);
 
   const result = [];
-  function inorder(node) {
+  function traverse(node) {
     if (!node) return;
-    inorder(node.left);
+    traverse(node.left);
     result.push(node.value);
     logStep("tree_state", { tree: copyTree(root), highlightNode: node.value, highlightPath: [...result] });
-    inorder(node.right);
+    traverse(node.right);
   }
 
-  inorder(root);
+  traverse(root);
   logStep("result", "Inorder: " + result.join(", "));
 }`,
 
@@ -635,15 +635,15 @@ const TEMPLATES: Record<string, string> = {
   for (const val of values) root = insert(root, val);
 
   const result = [];
-  function preorder(node) {
+  function traverse(node) {
     if (!node) return;
     result.push(node.value);
     logStep("tree_state", { tree: copyTree(root), highlightNode: node.value, highlightPath: [...result] });
-    preorder(node.left);
-    preorder(node.right);
+    traverse(node.left);
+    traverse(node.right);
   }
 
-  preorder(root);
+  traverse(root);
   logStep("result", "Preorder: " + result.join(", "));
 }`,
 
@@ -665,15 +665,15 @@ const TEMPLATES: Record<string, string> = {
   for (const val of values) root = insert(root, val);
 
   const result = [];
-  function postorder(node) {
+  function traverse(node) {
     if (!node) return;
-    postorder(node.left);
-    postorder(node.right);
+    traverse(node.left);
+    traverse(node.right);
     result.push(node.value);
     logStep("tree_state", { tree: copyTree(root), highlightNode: node.value, highlightPath: [...result] });
   }
 
-  postorder(root);
+  traverse(root);
   logStep("result", "Postorder: " + result.join(", "));
 }`,
   knapsack: `function knapsack(weights, values, capacity) {
@@ -860,7 +860,7 @@ const CodeEditor = ({ code, onChange, algorithm }: CodeEditorProps) => {
         <p className="font-medium text-foreground">Instructions:</p>
         <ul className="list-disc pl-4 space-y-0.5">
           <li>Write code in <span className="text-primary font-medium">JavaScript</span></li>
-          <li>Function name must match selected algorithm (e.g., <code>bfs</code>, <code>fcfs</code>, <code>bst_insert</code>)</li>
+          <li>Function name must match selected algorithm (e.g., <code>bfs</code>, <code>fcfs</code>, <code>insert</code>)</li>
           <li>
             Use <code>logStep(...)</code> to visualize steps
             <span className="text-xs text-muted-foreground">

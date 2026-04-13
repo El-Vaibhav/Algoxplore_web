@@ -133,16 +133,16 @@ async function runUserCode(code, algorithm, input) {
         priority: input?.scheduling?.priority || [],
         quantum: input?.scheduling?.quantum || 2,
         // Tree inputs
-        values: input?.tree?.values || [],
+        treeValues: input?.tree?.values || [],
         searchValue: input?.tree?.searchValue ?? null,
         deleteValue: input?.tree?.deleteValue ?? null,
         treeOperation: input?.tree?.operation || "insert",
         // DP inputs
         weights: input?.dp?.weights || [],
-        values: input?.dp?.values || [],
+        dpValues: input?.dp?.values || [],
         capacity: input?.dp?.capacity || 0,
-        s1: input.dp?.s1 || "",
-        s2: input.dp?.s2 || "",
+        s1: input?.dp?.s1 || "",
+        s2: input?.dp?.s2 || "",
         // Utilities
         Infinity: Infinity,
         Math: Math,
@@ -165,6 +165,7 @@ async function runUserCode(code, algorithm, input) {
         const isDPAlgo = ["knapsack", "lcs", "mcm"].includes(algorithm);
 
         let invocation = "";
+        let callableName = algorithm;
         if (isGraphAlgo) {
             invocation = `${algorithm}(graph, start);`;
         } else if (isSortingAlgo) {
@@ -179,17 +180,18 @@ async function runUserCode(code, algorithm, input) {
             }
         } else if (isTreeAlgo) {
             if (algorithm === "insert") {
-                invocation = `insert(values);`;
+                invocation = `insert(treeValues);`;
             }
             else if (algorithm === "search") {
-                invocation = `search(values, searchValue);`;
+                invocation = `search(treeValues, searchValue);`;
             }
             else if (algorithm === "delete") {
-                invocation = `delete(values, deleteValue);`;
+                callableName = "deleteNode";
+                invocation = `deleteNode(treeValues, deleteValue);`;
             }
             else {
                 // inorder / preorder / postorder
-                invocation = `${algorithm}(values);`;
+                invocation = `${algorithm}(treeValues);`;
             }
         }
         else if (isDPAlgo) {
@@ -200,14 +202,14 @@ async function runUserCode(code, algorithm, input) {
                 invocation = `mcm(weights);`;
             }
             else {
-                invocation = `${algorithm}(weights, values, capacity);`;
+                invocation = `${algorithm}(weights, dpValues, capacity);`;
             }
         }
 
-        const wrappedCode = `${code}
+const wrappedCode = `${code}
 
-if (typeof ${algorithm} !== "function") {
-  throw new Error("Function '${algorithm}' not defined");
+if (typeof ${callableName} !== "function") {
+  throw new Error("Function '${callableName}' not defined");
 }
 
 ${invocation}
