@@ -469,7 +469,7 @@ const TEMPLATES: Record<string, string> = {
   insert: `function insert(values) {
   let root = null;
 
-  function insert(root, val) {
+  function insert_node(root, val) {
     if (!root) {
       logStep("tree_state", { tree: null, highlightNode: val });
       return { value: val, left: null, right: null };
@@ -479,10 +479,10 @@ const TEMPLATES: Record<string, string> = {
 
     if (val < root.value) {
       logStep("compare", [val, root.value]);
-      root.left = insert(root.left, val);
+      root.left = insert_node(root.left, val);
     } else if (val > root.value) {
       logStep("compare", [val, root.value]);
-      root.right = insert(root.right, val);
+      root.right = insert_node(root.right, val);
     }
     return root;
   }
@@ -538,7 +538,7 @@ const TEMPLATES: Record<string, string> = {
   search(root, searchValue, []);
 }`,
 
-  delete: `function delete(values, searchValue, deleteValue) {
+  delete: `function delete(values, deleteValue) {
   let root = null;
 
   function insert(root, val) {

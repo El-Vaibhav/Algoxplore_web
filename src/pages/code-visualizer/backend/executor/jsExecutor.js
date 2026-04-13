@@ -8,7 +8,9 @@ async function runUserCode(code, algorithm, input) {
     function logStep(type, value) {
         let parsedValue;
 
-        if (type === "result") {
+        if (type === "tree_state" || type === "dp_update") {
+            parsedValue = value; // 🔥 DO NOT TOUCH OBJECTS
+        } else if (type === "result") {
             parsedValue = value;
         } else {
             parsedValue = Array.isArray(value)
@@ -109,7 +111,9 @@ async function runUserCode(code, algorithm, input) {
 
         // Tree-specific
         if (type === "tree_state") {
-            step.treeRoot = value.tree ? JSON.parse(JSON.stringify(value.tree)) : null;
+            if (value.tree !== undefined) {
+                step.treeRoot = JSON.parse(JSON.stringify(value.tree));
+            }
             step.highlightNode = value.highlightNode ?? null;
             step.highlightPath = value.highlightPath ?? [];
         }
@@ -156,7 +160,7 @@ async function runUserCode(code, algorithm, input) {
         const isGraphAlgo = ["dfs", "bfs", "prims", "kruskal", "toposort", "dijkstra"].includes(algorithm);
         const isSortingAlgo = ["bubble", "selection", "insertion", "merge", "quick"].includes(algorithm);
         const isSchedulingAlgo = ["fcfs", "sjf", "srtf", "roundrobin", "priority"].includes(algorithm);
-        const isTreeAlgo = [ "insert", "search","delete", "inorder", "preorder", "postorder"
+        const isTreeAlgo = ["insert", "search", "delete", "inorder", "preorder", "postorder"
         ].includes(algorithm);;
         const isDPAlgo = ["knapsack", "lcs", "mcm"].includes(algorithm);
 
