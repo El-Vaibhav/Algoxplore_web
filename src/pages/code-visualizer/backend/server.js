@@ -5,7 +5,7 @@ import executeRoute from "./routes/execute.js";
 const app = express();
 
 app.use(cors({
-  origin: ["https://algoxplore.vercel.app/"],
+  origin: ["https://algoxplore.vercel.app"],
   methods: ["GET", "POST"],
   credentials: true,
 }));
