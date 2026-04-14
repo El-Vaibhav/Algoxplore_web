@@ -116,6 +116,7 @@ async function runUserCode(code, algorithm, input) {
             }
             step.highlightNode = value.highlightNode ?? null;
             step.highlightPath = value.highlightPath ?? [];
+            step.traversalComplete = value.traversalComplete ?? false;
         }
 
         steps.push(step);

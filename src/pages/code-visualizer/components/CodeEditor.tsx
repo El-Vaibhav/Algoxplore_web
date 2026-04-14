@@ -18,18 +18,27 @@ const TEMPLATES: Record<string, string> = {
       }
     }
   }
+
+  logStep("result", "All Nodes Visited");
 }`,
 
   dfs: `function dfs(graph, start) {
-  visited = new Set();
-  visited.add(start);
-  logStep("visit", start);
+  const visited = new Set();
 
-  for (const neighbor of graph[start] || []) {
-    if (!visited.has(neighbor)) {
-      dfs(graph, neighbor, visited);
+  function visit(node) {
+    visited.add(node);
+    logStep("visit", node);
+
+    for (const neighbor of graph[node] || []) {
+      if (!visited.has(neighbor)) {
+        logStep("edge", [node, neighbor]);
+        visit(neighbor);
+      }
     }
   }
+
+  visit(start);
+  logStep("result", "All Nodes Visited");
 }`,
 
   prims: `function prims(graph, start) {
@@ -526,6 +535,7 @@ const TEMPLATES: Record<string, string> = {
 
     if (target === node.value) {
       logStep("result", "Found " + target);
+      logStep("tree_state", { tree: copyTree(root), highlightNode: node.value, highlightPath: [...path] });
     } else if (target < node.value) {
       logStep("compare", [target, node.value]);
       search(node.left, target, path);
@@ -614,6 +624,12 @@ const TEMPLATES: Record<string, string> = {
   }
 
   traverse(root);
+  logStep("tree_state", {
+    tree: copyTree(root),
+    highlightNode: null,
+    highlightPath: [...result],
+    traversalComplete: true
+  });
   logStep("result", "Inorder: " + result.join(", "));
 }`,
 
@@ -644,6 +660,12 @@ const TEMPLATES: Record<string, string> = {
   }
 
   traverse(root);
+  logStep("tree_state", {
+    tree: copyTree(root),
+    highlightNode: null,
+    highlightPath: [...result],
+    traversalComplete: true
+  });
   logStep("result", "Preorder: " + result.join(", "));
 }`,
 
@@ -674,6 +696,12 @@ const TEMPLATES: Record<string, string> = {
   }
 
   traverse(root);
+  logStep("tree_state", {
+    tree: copyTree(root),
+    highlightNode: null,
+    highlightPath: [...result],
+    traversalComplete: true
+  });
   logStep("result", "Postorder: " + result.join(", "));
 }`,
   knapsack: `function knapsack(weights, values, capacity) {

@@ -316,6 +316,12 @@ export function dfs(
 
   visit(start)
 
+  steps.push({
+    visitedNodes: [...visited],
+    visitedEdges: [],
+    description: "All Nodes Visited"
+  })
+
   return steps
 }
 //////////////////////////////////////////////////////

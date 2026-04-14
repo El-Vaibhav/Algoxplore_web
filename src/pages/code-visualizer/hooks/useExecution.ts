@@ -42,6 +42,7 @@ async function executeCode(payload: ExecutionPayload): Promise<ExecutionStep[]> 
   treeRoot: step.treeRoot ?? null,
   highlightNode: step.highlightNode ?? null,
   highlightPath: step.highlightPath ?? [],
+  traversalComplete: step.traversalComplete ?? false,
 
   // DP
   dpTable: step.dpTable ?? null,
