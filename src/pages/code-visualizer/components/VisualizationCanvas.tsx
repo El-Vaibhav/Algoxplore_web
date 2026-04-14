@@ -299,10 +299,10 @@ const DPCanvas = ({ steps, currentStepIndex, algorithm }: any) => {
   );
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full h-full flex items-center justify-center p-22 md:p-40">
       <svg
         viewBox={`0 0 ${cols * cellSize} ${rows * cellSize}`}
-        className="w-full h-auto"
+        className="w-auto h-auto max-w-full max-h-full"
         preserveAspectRatio="xMidYMid meet"
       >
         {table.map((row: number[], i: number) =>
