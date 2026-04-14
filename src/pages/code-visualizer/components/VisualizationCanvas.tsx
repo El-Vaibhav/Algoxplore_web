@@ -365,10 +365,11 @@ const DPCanvas = ({ steps, currentStepIndex, algorithm }: any) => {
 // ─── Tree visualization (SVG BST) ───────────────────
 const TreeCanvas = ({ steps, currentStepIndex }: { steps: ExecutionStep[]; currentStepIndex: number }) => {
   // Find latest tree state
-  const { tree, highlightNode, highlightPath } = useMemo(() => {
+  const { tree, highlightNode, highlightPath, traversalComplete } = useMemo(() => {
     let lastValidTree: TreeNode | null = null;
     let hn: number | null = null;
     let hp: number[] = [];
+    let tc = false;
 
     for (let i = 0; i <= currentStepIndex && i < steps.length; i++) {
 
@@ -384,12 +385,17 @@ const TreeCanvas = ({ steps, currentStepIndex }: { steps: ExecutionStep[]; curre
       if (steps[i].highlightPath) {
         hp = steps[i].highlightPath;
       }
+
+      if (steps[i].traversalComplete !== undefined) {
+        tc = steps[i].traversalComplete;
+      }
     }
 
     return {
       tree: lastValidTree,
       highlightNode: hn,
       highlightPath: new Set(hp),
+      traversalComplete: tc,
     };
   }, [steps, currentStepIndex]);
 
@@ -438,7 +444,8 @@ const TreeCanvas = ({ steps, currentStepIndex }: { steps: ExecutionStep[]; curre
               cx={n.x} cy={n.y} r={18}
               className={
                 isHighlight ? "fill-primary stroke-primary" :
-                  inPath ? "fill-accent/30 stroke-accent" :
+                  inPath && traversalComplete ? "fill-violet-500/35 stroke-violet-400" :
+                    inPath ? "fill-accent/30 stroke-accent" :
                     "fill-muted stroke-border"
               }
               strokeWidth={2}

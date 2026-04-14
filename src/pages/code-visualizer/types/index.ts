@@ -58,6 +58,7 @@ export interface ExecutionStep {
   treeRoot?: TreeNode | null;
   highlightNode?: number | null;
   highlightPath?: number[];
+  traversalComplete?: boolean;
   dpTable?: number[][];
   dpCell?: { i: number; j: number };
   dpCompare?: { from: [number, number][] };
