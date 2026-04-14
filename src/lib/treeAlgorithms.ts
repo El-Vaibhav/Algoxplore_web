@@ -101,6 +101,7 @@ export function avlConstructionSteps(root: TreeNode | null): { tree: TreeNode | 
 export interface AnimationStep {
   tree: TreeNode | null;
   highlighted: number[];    // node values currently highlighted
+  completed?: number[];     // node values shown as traversal-complete (purple)
   comparing: number[];
   swapping?: number[];     // node values being compared
   message: string;
@@ -157,7 +158,8 @@ function makeStep(
   message: string,
   traversalOrder: number[],
   rotationType?: string,
-  swapping: number[] = []   // ✅ NEW
+  swapping: number[] = [],   // ✅ NEW
+  completed: number[] = []
 ): AnimationStep {
   const t = cloneTree(tree);
   if (t) assignPositions(t);
@@ -165,6 +167,7 @@ function makeStep(
   return {
     tree: t,
     highlighted: [...highlighted],
+    completed: [...completed],
     comparing: [...comparing],
     swapping: [...swapping],  // ✅ NEW
     message,
@@ -220,6 +223,7 @@ export function bstSearchSteps(root: TreeNode | null, value: number): AnimationS
     steps.push(makeStep(root, [current.value], [value], `Comparing with ${current.value}`, []));
     if (value === current.value) {
       steps.push(makeStep(root, [current.value], [], `Found ${value}!`, []));
+      steps.push(makeStep(root, [current.value], [], `Search complete: ${value} highlighted`, []));
       return steps;
     } else if (value < current.value) {
       steps.push(makeStep(root, [current.value], [], `${value} < ${current.value}, go left`, []));
@@ -256,7 +260,18 @@ export function inOrderSteps(root: TreeNode | null): AnimationStep[] {
     traverse(node.right);
   }
   traverse(root);
-  steps.push(makeStep(root, [], [], `In-Order traversal complete: [${order.join(', ')}]`, order));
+  steps.push(
+    makeStep(
+      root,
+      [],
+      [],
+      `In-Order traversal complete: [${order.join(', ')}]`,
+      order,
+      undefined,
+      [],
+      [...order]
+    )
+  );
   return steps;
 }
 
@@ -279,7 +294,18 @@ export function preOrderSteps(root: TreeNode | null): AnimationStep[] {
     traverse(node.right);
   }
   traverse(root);
-  steps.push(makeStep(root, [], [], `Pre-Order traversal complete: [${order.join(', ')}]`, order));
+  steps.push(
+    makeStep(
+      root,
+      [],
+      [],
+      `Pre-Order traversal complete: [${order.join(', ')}]`,
+      order,
+      undefined,
+      [],
+      [...order]
+    )
+  );
   return steps;
 }
 
@@ -304,7 +330,18 @@ export function postOrderSteps(root: TreeNode | null): AnimationStep[] {
     );
   }
   traverse(root);
-  steps.push(makeStep(root, [], [], `Post-Order traversal complete: [${order.join(', ')}]`, order));
+  steps.push(
+    makeStep(
+      root,
+      [],
+      [],
+      `Post-Order traversal complete: [${order.join(', ')}]`,
+      order,
+      undefined,
+      [],
+      [...order]
+    )
+  );
   return steps;
 }
 

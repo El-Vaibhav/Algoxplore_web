@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 interface TreeCanvasProps {
   tree: TreeNode | null;
   highlighted: number[];
+  completed: number[];
   comparing: number[];
   swapping: number[];
   width?: number;
@@ -34,7 +35,7 @@ function getNodes(node: TreeNode | null): TreeNode[] {
   return [node, ...getNodes(node.left), ...getNodes(node.right)];
 }
 
-const TreeCanvas = ({ tree, highlighted, comparing, swapping, width = 800, height = 450 }: TreeCanvasProps) => {
+const TreeCanvas = ({ tree, highlighted, completed, comparing, swapping, width = 800, height = 450 }: TreeCanvasProps) => {
   const edges = getEdges(tree);
   const nodes = getNodes(tree);
 
@@ -66,6 +67,7 @@ const TreeCanvas = ({ tree, highlighted, comparing, swapping, width = 800, heigh
       {/* Nodes */}
       {nodes.map((n) => {
         const isHighlighted = highlighted.includes(n.value);
+        const isCompleted = completed.includes(n.value);
         const isComparing = comparing.includes(n.value);
         const isSwapping = swapping.includes(n.value);
 
@@ -101,19 +103,23 @@ const TreeCanvas = ({ tree, highlighted, comparing, swapping, width = 800, heigh
               cx={n.x}
               cy={n.y}
               r={22}
-              fill={
-                isSwapping
-                  ? "#ef4444" // 🔴 swap
-                  : isHighlighted
-                    ? "hsl(var(--tree))" // 🟢 correct
+                fill={
+                  isSwapping
+                    ? "#ef4444" // 🔴 swap
+                    : isCompleted
+                      ? "#9333ea" // 🟣 traversal complete
+                    : isHighlighted
+                      ? "hsl(var(--tree))" // 🟢 correct
                     : isComparing
                       ? "hsl(var(--warning))" // 🟡 compare
                       : "hsl(var(--card))"
               }
-              stroke={
-                isSwapping
-                  ? "#ef4444"
-                  : isHighlighted
+                stroke={
+                  isSwapping
+                    ? "#ef4444"
+                    : isCompleted
+                      ? "#9333ea"
+                    : isHighlighted
                     ? "hsl(var(--tree))"
                     : isComparing
                       ? "hsl(var(--warning))"
@@ -127,7 +133,7 @@ const TreeCanvas = ({ tree, highlighted, comparing, swapping, width = 800, heigh
               textAnchor="middle"
               dominantBaseline="central"
               fill={
-                isHighlighted || isComparing
+                isHighlighted || isCompleted || isComparing
                   ? "hsl(var(--background))"
                   : "hsl(var(--foreground))"
               }
