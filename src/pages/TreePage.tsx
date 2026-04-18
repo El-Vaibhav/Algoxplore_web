@@ -161,6 +161,7 @@ const TreePage = () => {
 
   const currentStepData = currentStep >= 0 && currentStep < steps.length ? steps[currentStep] : null;
   const highlighted = currentStepData?.highlighted ?? [];
+  const completed = currentStepData?.completed ?? [];
   const comparing = currentStepData?.comparing ?? [];
   const displayTree = currentStepData?.tree ?? tree;
   const swapping = currentStepData?.swapping ?? [];
@@ -316,6 +317,7 @@ const TreePage = () => {
             <TreeCanvas
               tree={displayTree}
               highlighted={highlighted}
+              completed={completed}
               comparing={comparing}
               swapping={swapping}
               width={1000}

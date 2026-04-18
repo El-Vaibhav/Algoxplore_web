@@ -34,6 +34,8 @@ const CODE_DEFAULTS: Record<string, string> = {
       }
     }
   }
+
+  logStep("result", "All Nodes Visited");
 }`,
 
   bubble: `function bubble(array) {

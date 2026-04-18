@@ -133,6 +133,7 @@ async function runUserCode(code, algorithm, input) {
             }
             step.highlightNode = value.highlightNode ?? null;
             step.highlightPath = value.highlightPath ?? [];
+            step.traversalComplete = value.traversalComplete ?? false;
         }
 
         // Add the step to the steps array
