@@ -44,7 +44,7 @@ The goal is simple: turn complex algorithm topics into visual, understandable, a
 <p align="center">
   <img src="https://github.com/user-attachments/assets/f065ca82-e6e3-4833-8099-8d5676119bd8" width="22%" />
   <img src="https://github.com/user-attachments/assets/f7a0d466-f088-4483-b067-36eadc52e090" width="22%" />
-  <img width="292" height="633" alt="image" src="https://github.com/user-attachments/assets/9303e907-058c-4129-9480-1ebaa7f276f4" width="22%"/>
+  <img src="https://github.com/user-attachments/assets/9303e907-058c-4129-9480-1ebaa7f276f4" width="22%"/>
 
 </p>
 
