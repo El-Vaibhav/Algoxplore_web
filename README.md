@@ -4,6 +4,7 @@ Whether you are a beginner trying to understand core concepts or an advanced lea
 
 The goal is simple: turn complex algorithm topics into visual, understandable, and testable experiences.
 
+# WebApp Screenshots
 <img width="1524" height="855" alt="image" src="https://github.com/user-attachments/assets/b85d8afe-b1ab-43b0-b798-b44f8c30b016" />
 
 <br><br>
@@ -31,6 +32,21 @@ The goal is simple: turn complex algorithm topics into visual, understandable, a
 <br><br>
 
 <img width="1372" height="908" alt="image" src="https://github.com/user-attachments/assets/f80a7c1a-ac99-432f-8481-a56de01937e8" />
+
+# MobileApp Screenshots
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ad176a1e-c636-4264-afca-db1e844fe7f3" width="22%" />
+  <img src="https://github.com/user-attachments/assets/8789f90f-fab9-48d1-bfb1-94658e444080" width="22%" />
+  <img src="https://github.com/user-attachments/assets/bf95a17e-8317-426d-9f53-c584a801ee32" width="22%" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f065ca82-e6e3-4833-8099-8d5676119bd8" width="22%" />
+  <img src="https://github.com/user-attachments/assets/f7a0d466-f088-4483-b067-36eadc52e090" width="22%" />
+  <img width="292" height="633" alt="image" src="https://github.com/user-attachments/assets/9303e907-058c-4129-9480-1ebaa7f276f4" width="22%"/>
+
+</p>
 
 
 # ✨ Key Features
