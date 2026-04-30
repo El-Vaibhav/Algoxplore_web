@@ -897,6 +897,9 @@ const CodeEditor = ({ code, onChange, algorithm }: CodeEditorProps) => {
           </li>
           <li>Do not use <code>console.log</code></li>
         </ul>
+        <p className="pt-1 text-primary/90">
+          Please wait a few seconds for the server to be ready after the page loads.
+        </p>
       </div>
       <Textarea
         value={code}
