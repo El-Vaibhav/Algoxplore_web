@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, House } from "lucide-react";
 import CodeEditor from "./components/CodeEditor";
 import GraphInput from "./components/AlgoInput";
 import ControlPanel from "./components/ControlPanel";
@@ -195,19 +195,28 @@ const CodeVisualizerPage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="border-b border-border px-5 py-3 flex items-center gap-4 bg-card/50 backdrop-blur-sm">
-        <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <div>
-          <h1 className="text-lg font-bold tracking-tight flex items-center gap-2">
-            <span className="text-primary">{"</>"}</span>
-            Code Visualizer Playground
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            Write · Run · Visualize algorithms step-by-step
-          </p>
+      <header className="border-b border-border px-5 py-3 flex items-center justify-between gap-4 bg-card/50 backdrop-blur-sm">
+        <div className="flex items-center gap-4">
+          <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+          <div>
+            <h1 className="text-lg font-bold tracking-tight flex items-center gap-2">
+              <span className="text-primary">{"</>"}</span>
+              Code Visualizer Playground
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              Write · Run · Visualize algorithms step-by-step
+            </p>
+          </div>
         </div>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 py-1.5 text-xs text-secondary-foreground hover:bg-secondary/80 transition-colors"
+        >
+          <House className="h-3.5 w-3.5" />
+          Home
+        </Link>
       </header>
 
       <div className="flex-1 px-5 py-4 max-w-[1400px] w-full mx-auto flex flex-col gap-5">
