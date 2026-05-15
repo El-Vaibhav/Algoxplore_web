@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import ComplexityPanel from "@/components/ComplexityPanel";
 import { QuizToggle, QuizScoreBadge, QuizCard, QuizSummary } from "@/components/QuizMode";
 import { sortingQuiz } from "@/lib/quizGenerators";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const algorithms = ["Bubble Sort", "Insertion Sort", "Selection Sort", "Merge Sort", "Quick Sort"];
 const algoFns: Record<string, (arr: number[]) => SortStep[]> = {
@@ -37,6 +38,7 @@ const SortingPage = () => {
   const [quizScore, setQuizScore] = useState(0);
   const [quizTotal, setQuizTotal] = useState(0);
   const [stepIndex, setStepIndex] = useState(-1);
+  const isMobile = useIsMobile();
 
   const currentQuestion =
     quizActive && stepIndex >= 0 && stepIndex < stepsRef.current.length
@@ -124,8 +126,8 @@ const SortingPage = () => {
       <div className="grid lg:grid-cols-[1fr_300px] gap-5">
         {/* Visualization - large area */}
         <div className="space-y-3">
-          <div className="rounded-xl border border-border bg-card p-5 h-[520px] flex flex-col">
-            <div className="flex items-center justify-between mb-4">
+          <div className="rounded-xl border border-border bg-card p-3 md:p-5 h-[460px] md:h-[520px] flex flex-col">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 md:mb-4">
               <h3 className="text-sm font-semibold text-foreground">Array Visualization</h3>
               <div className="flex items-center gap-3 text-[10px]">
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-warning inline-block" /> Comparing</span>
@@ -133,7 +135,11 @@ const SortingPage = () => {
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-success inline-block" /> Sorted</span>
               </div>
             </div>
-            <div className="flex-1 flex items-end gap-[2px] min-h-0">
+            <div className="flex-1 min-h-0 overflow-x-auto">
+              <div
+                className="h-full flex items-end gap-1 md:gap-[2px] mx-auto"
+                style={{ width: isMobile ? `${Math.max(displayArray.length * 18, 260)}px` : "100%" }}
+              >
               {displayArray.map((val, idx) => {
                 const isComparing = currentStep?.comparing.includes(idx);
                 const isSwapping = currentStep?.swapping.includes(idx);
@@ -143,15 +149,16 @@ const SortingPage = () => {
                 else if (isSwapping) barColor = "bg-destructive";
                 else if (isComparing) barColor = "bg-warning";
                 return (
-                  <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full">
+                  <div key={idx} className="flex flex-col items-center justify-end h-full" style={{ width: isMobile ? "14px" : undefined, flex: isMobile ? "0 0 14px" : "1 1 0%" }}>
                     <div className={`w-full rounded-t-sm transition-all duration-100 ${barColor}`}
-                      style={{ height: `${(val / maxVal) * 92}%` }} />
+                      style={{ height: `${(val / maxVal) * 92}%`, minHeight: isMobile ? "8px" : undefined }} />
                     {displayArray.length <= 30 && (
                       <span className="text-[9px] text-muted-foreground mt-1 font-mono">{val}</span>
                     )}
                   </div>
                 );
               })}
+              </div>
             </div>
           </div>
         </div>
