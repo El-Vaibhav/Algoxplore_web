@@ -21,6 +21,7 @@ import {
   generateRandomWalls,
 } from "@/lib/searchAlgorithms";
 import ComplexityPanel from "@/components/ComplexityPanel";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type AlgoType = "binary-search" | "a-star" | "ao-star";
 
@@ -66,6 +67,7 @@ const SearchPage = () => {
   const [quizScore, setQuizScore] = useState(0);
   const [quizTotal, setQuizTotal] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const isMobile = useIsMobile();
 
 
   // Binary Search state
@@ -245,7 +247,7 @@ const SearchPage = () => {
     <AlgoLayout title="Search & Pathfinding">
       <div className="grid lg:grid-cols-[1fr_300px] gap-4 md:gap-6">
         <div className="space-y-4">
-          <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
+          <div className="rounded-xl border border-border bg-card p-3 md:p-4 flex flex-wrap items-center gap-2 justify-between">
             <QuizToggle
               active={quizActive}
               onToggle={() => setQuizActive(prev => !prev)}
@@ -257,7 +259,7 @@ const SearchPage = () => {
               accent="search"
             />
           </div>
-          <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-3 md:p-6 min-h-[420px] md:min-h-[480px] relative overflow-hidden">
+          <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-3 md:p-6 min-h-[440px] md:min-h-[480px] relative overflow-hidden">
             <div className="absolute top-0 left-1/4 w-64 h-64 bg-search/5 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-search/3 rounded-full blur-[80px] pointer-events-none" />
 
@@ -267,6 +269,7 @@ const SearchPage = () => {
               )}
               {selectedAlgo === "a-star" && (
                 <AStarViz
+                  isMobile={isMobile}
                   steps={asSteps}
                   currentStep={asStep}
                   walls={walls}
@@ -298,6 +301,14 @@ const SearchPage = () => {
             </AnimatePresence>
           </div>
 
+          {isMobile && quizActive && currentQuestion && (
+            <QuizCard
+              question={currentQuestion}
+              onAnswer={handleAnswer}
+              accent="search"
+            />
+          )}
+
         </div>
 
 
@@ -328,7 +339,7 @@ const SearchPage = () => {
               ))}
             </div>
           </div>
-          {quizActive && currentQuestion && (
+          {!isMobile && quizActive && currentQuestion && (
             <QuizCard
               question={currentQuestion}
               onAnswer={handleAnswer}
@@ -380,7 +391,7 @@ const SearchPage = () => {
                 <Shuffle className="w-4 h-4" /> Randomize Walls
               </Button>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
 
                 <Button
                   size="sm"
@@ -529,7 +540,8 @@ function AStarViz({
   placing,
   setStart,
   setEnd,
-  setPlacing
+  setPlacing,
+  isMobile
 }: {
   steps: AStarStep[];
   currentStep: number;
@@ -540,9 +552,10 @@ function AStarViz({
   setStart: (p: { row: number; col: number }) => void;
   setEnd: (p: { row: number; col: number }) => void;
   setPlacing: (v: "start" | "end" | null) => void;
+  isMobile: boolean;
 }) {
   const step = currentStep >= 0 && currentStep < steps.length ? steps[currentStep] : null;
-  const CELL = 26;
+  const CELL = isMobile ? 20 : 26;
 
   return (
     <div className="flex items-center justify-center h-full overflow-auto">
