@@ -339,7 +339,7 @@ const TreePage = () => {
               accent="tree"
             />
             {/* ✅ QUIZ CARD OVERLAY */}
-            {quizActive && activeQuestion && (
+            {!isMobile && quizActive && activeQuestion && (
               <QuizCard
                 question={activeQuestion}
                 onAnswer={(correct) => {
@@ -434,6 +434,21 @@ const TreePage = () => {
           ))}
 
         </div>
+
+        {/* Mobile Quiz Question Panel */}
+        {isMobile && quizActive && activeQuestion && (
+          <div className="rounded-xl border border-border bg-card p-3">
+            <QuizCard
+              question={activeQuestion}
+              onAnswer={(correct) => {
+                handleAnswer(correct);
+                setActiveQuestion(null);
+              }}
+              accent="tree"
+            />
+          </div>
+        )}
+
         {/* ================= LEFT CONTROLS ================= */}
         <div className="flex gap-4 flex-wrap">
 
