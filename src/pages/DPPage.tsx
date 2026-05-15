@@ -628,7 +628,7 @@ const DPPage = () => {
 
   return (
     <AlgoLayout title="Dynamic Programming">
-      <div className="grid lg:grid-cols-[1fr_300px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4 md:gap-6 w-full">
         <div className="space-y-4">
           <div className="flex gap-2 flex-wrap">
             {algorithms.map(a => (
@@ -719,7 +719,7 @@ const DPPage = () => {
           <AlgoInfo name={info.name} explanation={info.explanation} timeComplexity={info.timeComplexity} code={info.code} accentColor="graph" />
         </div>
 
-        <div className="space-y-8 mt-14">
+        <div className="space-y-4 md:space-y-8 mt-0 lg:mt-14">
           <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
             <QuizToggle
               active={quizActive}

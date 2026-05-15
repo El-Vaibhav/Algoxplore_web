@@ -139,7 +139,7 @@ const SchedulingComparePage = () => {
     const avgTat = panel.result ? (panel.result.turnaroundTime.reduce((a, b) => a + b, 0) / panel.result.turnaroundTime.length).toFixed(2) : "—";
 
     return (
-      <div className="flex-1 min-w-0 space-y-3">
+      <div className="w-full min-w-0 space-y-3">
         <div className="rounded-xl border border-border bg-card p-4 min-h-[200px]">
           <div className="flex items-center justify-between mb-3">
             <h3 className={`text-sm font-bold ${color}`}>{panel.algo}</h3>
@@ -204,12 +204,12 @@ const SchedulingComparePage = () => {
 
   return (
     <AlgoLayout title="Scheduling — Compare">
-      <div className="w-full rounded-xl border border-border bg-card p-4 mb-5">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="w-full rounded-xl border border-border bg-card p-3 md:p-4 mb-4 md:mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-start lg:items-center justify-between gap-3 md:gap-4">
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Algorithm A</label>
             <select value={algoA} onChange={e => setAlgoA(e.target.value)} disabled={isRunning}
-              className="block w-36 px-3 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none">
+              className="block w-full sm:w-36 px-3 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none">
               {algorithms.map(a => <option key={a} value={a}>{a}</option>)}
             </select>
           </div>
@@ -217,50 +217,50 @@ const SchedulingComparePage = () => {
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Algorithm B</label>
             <select value={algoB} onChange={e => setAlgoB(e.target.value)} disabled={isRunning}
-              className="block w-36 px-3 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none">
+              className="block w-full sm:w-36 px-3 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none">
               {algorithms.map(a => <option key={a} value={a}>{a}</option>)}
             </select>
           </div>
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Arrival</label>
             <input value={arrivalInput} onChange={e => setArrivalInput(e.target.value)}
-              className="w-28 px-2 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none" />
+              className="w-full sm:w-28 px-2 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none" />
           </div>
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Burst</label>
             <input value={burstInput} onChange={e => setBurstInput(e.target.value)}
-              className="w-28 px-2 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none" />
+              className="w-full sm:w-28 px-2 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none" />
           </div>
           {needsPriority && (
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">Priority</label>
               <input value={priorityInput} onChange={e => setPriorityInput(e.target.value)}
-                className="w-24 px-2 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none" />
+                className="w-full sm:w-24 px-2 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none" />
             </div>
           )}
           {needsQuantum && (
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">Quantum</label>
               <input value={quantumInput} onChange={e => setQuantumInput(e.target.value)}
-                className="w-16 px-2 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none" />
+                className="w-full sm:w-16 px-2 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none" />
             </div>
           )}
-          <div className="min-w-[140px]">
+          <div className="w-full sm:min-w-[140px]">
             <SpeedControl speed={speed} onSpeedChange={setSpeed} />
           </div>
-          <div className="flex gap-2 pb-0.5">
+          <div className="flex flex-col sm:flex-row gap-2 pb-0.5 w-full sm:w-auto">
             <button onClick={startCompare} disabled={isRunning}
-              className="px-5 py-2 text-sm rounded-lg bg-scheduling text-accent-foreground font-medium hover:opacity-90 disabled:opacity-50">
+              className="w-full sm:w-auto px-5 py-2 text-sm rounded-lg bg-scheduling text-accent-foreground font-medium hover:opacity-90 disabled:opacity-50">
               {isRunning ? "Running..." : "▶ Compare"}
             </button>
-            <button onClick={resetAll} className="px-4 py-2 text-sm rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80">Reset</button>
+            <button onClick={resetAll} className="w-full sm:w-auto px-4 py-2 text-sm rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80">Reset</button>
           </div>
         </div>
       </div>
 
-      <div className="flex gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
         {renderGanttPanel(panelA, "text-scheduling")}
-        <div className="w-px bg-border self-stretch" />
+        <div className="hidden lg:block w-px bg-border self-stretch" />
         {renderGanttPanel(panelB, "text-sorting")}
       </div>
 

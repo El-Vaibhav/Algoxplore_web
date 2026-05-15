@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import ComplexityPanel from "@/components/ComplexityPanel";
 import { QuizToggle, QuizScoreBadge, QuizCard, QuizSummary } from "@/components/QuizMode";
 import { sortingQuiz } from "@/lib/quizGenerators";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const algorithms = ["Bubble Sort", "Insertion Sort", "Selection Sort", "Merge Sort", "Quick Sort"];
 const algoFns: Record<string, (arr: number[]) => SortStep[]> = {
@@ -37,6 +38,7 @@ const SortingPage = () => {
   const [quizScore, setQuizScore] = useState(0);
   const [quizTotal, setQuizTotal] = useState(0);
   const [stepIndex, setStepIndex] = useState(-1);
+  const isMobile = useIsMobile();
 
   const currentQuestion =
     quizActive && stepIndex >= 0 && stepIndex < stepsRef.current.length
@@ -121,11 +123,11 @@ const SortingPage = () => {
   return (
     <AlgoLayout title="Sorting Algorithms">
       {/* Top: Controls bar */}
-      <div className="grid lg:grid-cols-[1fr_300px] gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5 w-full">
         {/* Visualization - large area */}
         <div className="space-y-3">
-          <div className="rounded-xl border border-border bg-card p-5 h-[520px] flex flex-col">
-            <div className="flex items-center justify-between mb-4">
+          <div className="rounded-xl border border-border bg-card p-3 md:p-5 h-[460px] md:h-[520px] flex flex-col">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 md:mb-4">
               <h3 className="text-sm font-semibold text-foreground">Array Visualization</h3>
               <div className="flex items-center gap-3 text-[10px]">
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-warning inline-block" /> Comparing</span>
@@ -133,7 +135,11 @@ const SortingPage = () => {
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-success inline-block" /> Sorted</span>
               </div>
             </div>
-            <div className="flex-1 flex items-end gap-[2px] min-h-0">
+            <div className="flex-1 min-h-0 overflow-x-auto">
+              <div
+                className="h-full flex items-end gap-1 md:gap-[2px] mx-auto"
+                style={{ width: isMobile ? `${Math.max(displayArray.length * 18, 260)}px` : "100%" }}
+              >
               {displayArray.map((val, idx) => {
                 const isComparing = currentStep?.comparing.includes(idx);
                 const isSwapping = currentStep?.swapping.includes(idx);
@@ -143,15 +149,16 @@ const SortingPage = () => {
                 else if (isSwapping) barColor = "bg-destructive";
                 else if (isComparing) barColor = "bg-warning";
                 return (
-                  <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full">
+                  <div key={idx} className="flex flex-col items-center justify-end h-full" style={{ width: isMobile ? "14px" : undefined, flex: isMobile ? "0 0 14px" : "1 1 0%" }}>
                     <div className={`w-full rounded-t-sm transition-all duration-100 ${barColor}`}
-                      style={{ height: `${(val / maxVal) * 92}%` }} />
+                      style={{ height: `${(val / maxVal) * 92}%`, minHeight: isMobile ? "8px" : undefined }} />
                     {displayArray.length <= 30 && (
                       <span className="text-[9px] text-muted-foreground mt-1 font-mono">{val}</span>
                     )}
                   </div>
                 );
               })}
+              </div>
             </div>
           </div>
         </div>
@@ -238,14 +245,14 @@ const SortingPage = () => {
       </div>
 
       {/* Bottom: Algorithm info full width */}
-      <div className="mt-5 grid md:grid-cols-3 gap-5">
-        <div className="rounded-xl border border-border bg-card p-5 space-y-2">
+      <div className="mt-5 w-full grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+        <div className="rounded-xl border border-border bg-card p-4 md:p-5 space-y-2 w-full">
           <h3 className="text-base font-semibold text-foreground">{algo}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">{info.explanation}</p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+        <div className="rounded-xl border border-border bg-card p-4 md:p-5 space-y-3 w-full">
           <h4 className="text-sm font-semibold text-foreground">Time Complexity</h4>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3">
             {(["best", "average", "worst"] as const).map(k => (
               <div key={k} className="text-center p-3 rounded-lg bg-secondary/50">
                 <div className="text-xs text-muted-foreground capitalize">{k}</div>
@@ -255,9 +262,9 @@ const SortingPage = () => {
           </div>
         </div>
         {info.code && (
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="rounded-xl border border-border bg-card p-4 md:p-5 w-full">
             <h4 className="text-sm font-semibold text-foreground mb-2">Pseudocode</h4>
-            <pre className="text-[11px] font-mono text-muted-foreground bg-secondary/50 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap max-h-48 overflow-y-auto">{info.code}</pre>
+            <pre className="text-xs md:text-[11px] font-mono text-muted-foreground bg-secondary/50 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap max-h-48 overflow-y-auto">{info.code}</pre>
           </div>
         )}
       </div>

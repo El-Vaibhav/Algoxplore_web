@@ -111,7 +111,7 @@ const SortingComparePage = () => {
     const info = sortingAlgoInfo[panel.algo];
 
     return (
-      <div className="flex-1 min-w-0 space-y-3">
+      <div className="w-full min-w-0 space-y-3">
         <div className="rounded-xl border border-border bg-card p-4 h-[380px] flex flex-col">
           <div className="flex items-center justify-between mb-3">
             <h3 className={`text-sm font-bold ${color}`}>{panel.algo}</h3>
@@ -148,7 +148,7 @@ const SortingComparePage = () => {
         </div>
         {/* Complexity info */}
         <div className="rounded-xl border border-border bg-card p-3">
-          <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center">
             {(["best", "average", "worst"] as const).map(k => (
               <div key={k} className="p-2 rounded-lg bg-secondary/50">
                 <div className="text-[10px] text-muted-foreground capitalize">{k}</div>
@@ -164,12 +164,12 @@ const SortingComparePage = () => {
   return (
     <AlgoLayout title="Sorting — Compare">
       {/* Controls bar */}
-      <div className="w-full rounded-xl border border-border bg-card p-4 mb-5">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="w-full rounded-xl border border-border bg-card p-3 md:p-4 mb-4 md:mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-start lg:items-center justify-between gap-3 md:gap-4">
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Algorithm A</label>
             <select value={algoA} onChange={e => setAlgoA(e.target.value)} disabled={isRunning}
-              className="block w-44 px-3 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none">
+              className="block w-full sm:w-44 px-3 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none">
               {algorithms.map(a => <option key={a} value={a}>{a}</option>)}
             </select>
           </div>
@@ -177,7 +177,7 @@ const SortingComparePage = () => {
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Algorithm B</label>
             <select value={algoB} onChange={e => setAlgoB(e.target.value)} disabled={isRunning}
-              className="block w-44 px-3 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none">
+              className="block w-full sm:w-44 px-3 py-1.5 text-xs rounded-lg bg-secondary border border-border text-foreground focus:outline-none">
               {algorithms.map(a => <option key={a} value={a}>{a}</option>)}
             </select>
           </div>
@@ -187,16 +187,16 @@ const SortingComparePage = () => {
               onChange={e => { setArraySize(+e.target.value); setArray(generateRandomArray(+e.target.value, 100)); }}
               className="w-28 accent-sorting" />
           </div>
-          <div className="w-36">
+          <div className="w-full sm:w-36">
             <SpeedControl speed={speed} onSpeedChange={setSpeed} />
           </div>
-          <div className="flex gap-2 pb-0.5">
+          <div className="flex flex-col sm:flex-row gap-2 pb-0.5 w-full sm:w-auto">
             <button onClick={startCompare} disabled={isRunning}
-              className="px-5 py-2 text-sm rounded-lg bg-sorting text-primary-foreground font-medium hover:opacity-90 transition-opacity disabled:opacity-50">
+              className="w-full sm:w-auto px-5 py-2 text-sm rounded-lg bg-sorting text-primary-foreground font-medium hover:opacity-90 transition-opacity disabled:opacity-50">
               {isRunning ? "Running..." : "▶ Compare"}
             </button>
             <button onClick={reset}
-              className="px-4 py-2 text-sm rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
+              className="w-full sm:w-auto px-4 py-2 text-sm rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
               Reset
             </button>
           </div>
@@ -204,9 +204,9 @@ const SortingComparePage = () => {
       </div>
 
       {/* Side by side panels */}
-      <div className="flex gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
         {renderPanel(panelA, "text-sorting", "A")}
-        <div className="w-px bg-border self-stretch" />
+        <div className="hidden lg:block w-px bg-border self-stretch" />
         {renderPanel(panelB, "text-accent", "B")}
       </div>
 
