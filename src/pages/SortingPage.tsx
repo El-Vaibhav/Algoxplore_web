@@ -123,7 +123,7 @@ const SortingPage = () => {
   return (
     <AlgoLayout title="Sorting Algorithms">
       {/* Top: Controls bar */}
-      <div className="grid lg:grid-cols-[1fr_300px] gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5 w-full">
         {/* Visualization - large area */}
         <div className="space-y-3">
           <div className="rounded-xl border border-border bg-card p-3 md:p-5 h-[460px] md:h-[520px] flex flex-col">
@@ -245,14 +245,14 @@ const SortingPage = () => {
       </div>
 
       {/* Bottom: Algorithm info full width */}
-      <div className="mt-5 grid md:grid-cols-3 gap-5">
-        <div className="rounded-xl border border-border bg-card p-5 space-y-2">
+      <div className="mt-5 w-full grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+        <div className="rounded-xl border border-border bg-card p-4 md:p-5 space-y-2 w-full">
           <h3 className="text-base font-semibold text-foreground">{algo}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">{info.explanation}</p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+        <div className="rounded-xl border border-border bg-card p-4 md:p-5 space-y-3 w-full">
           <h4 className="text-sm font-semibold text-foreground">Time Complexity</h4>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3">
             {(["best", "average", "worst"] as const).map(k => (
               <div key={k} className="text-center p-3 rounded-lg bg-secondary/50">
                 <div className="text-xs text-muted-foreground capitalize">{k}</div>
@@ -262,9 +262,9 @@ const SortingPage = () => {
           </div>
         </div>
         {info.code && (
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="rounded-xl border border-border bg-card p-4 md:p-5 w-full">
             <h4 className="text-sm font-semibold text-foreground mb-2">Pseudocode</h4>
-            <pre className="text-[11px] font-mono text-muted-foreground bg-secondary/50 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap max-h-48 overflow-y-auto">{info.code}</pre>
+            <pre className="text-xs md:text-[11px] font-mono text-muted-foreground bg-secondary/50 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap max-h-48 overflow-y-auto">{info.code}</pre>
           </div>
         )}
       </div>
