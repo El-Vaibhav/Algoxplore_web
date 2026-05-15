@@ -215,7 +215,7 @@ const SchedulingPage = () => {
 
   return (
     <AlgoLayout title="Scheduling Algorithms">
-      <div className="grid lg:grid-cols-[1fr_300px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4 md:gap-6 w-full">
         {/* Main content */}
         <div className="space-y-4">
           {/* Timeline visualization */}
@@ -308,7 +308,7 @@ const SchedulingPage = () => {
           </div>
 
           {/* Statistics Table - rows animate in */}
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="rounded-xl border border-border bg-card p-4 md:p-5 w-full">
             <h3 className="font-semibold text-foreground mb-3">Statistics</h3>
             {result ? (
               <div className="overflow-x-auto">
@@ -361,10 +361,10 @@ const SchedulingPage = () => {
           </div>
 
           {/* Bottom Algorithm Info */}
-          <div className="grid md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 w-full">
 
             {/* Explanation */}
-            <div className="rounded-xl border border-border bg-card p-5">
+            <div className="rounded-xl border border-border bg-card p-4 md:p-5 w-full">
               <h3 className="font-semibold text-foreground mb-2">{algo}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {info.explanation}
@@ -372,10 +372,10 @@ const SchedulingPage = () => {
             </div>
 
             {/* Time Complexity */}
-            <div className="rounded-xl border border-border bg-card p-5">
+            <div className="rounded-xl border border-border bg-card p-4 md:p-5 w-full">
               <h3 className="font-semibold text-foreground mb-3">Time Complexity</h3>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3">
                 {(["best", "average", "worst"] as const).map(k => (
                   <div key={k} className="text-center p-3 rounded-lg bg-secondary/50">
                     <div className="text-xs text-muted-foreground capitalize">{k}</div>

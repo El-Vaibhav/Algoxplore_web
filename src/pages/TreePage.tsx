@@ -27,6 +27,7 @@ import {
 } from "@/lib/treeAlgorithms";
 import { Play, Pause, RotateCcw, Plus, Search, Trash2, TreeDeciduous } from "lucide-react";
 import ComplexityPanel from "@/components/ComplexityPanel";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type AlgoType = "bst-insert" | "bst-search" | "bst-delete" | "in-order" | "pre-order" | "post-order" | "avl-insert" | "min-heap" | "max-heap";
 
@@ -143,6 +144,7 @@ const TreePage = () => {
   const [quizTotal, setQuizTotal] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [activeQuestion, setActiveQuestion] = useState<QuizQuestion | null>(null);
+  const isMobile = useIsMobile();
 
   const handleAnswer = (correct: boolean) => {
     setQuizTotal(prev => prev + 1);
@@ -309,23 +311,23 @@ const TreePage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4 md:gap-6 items-stretch">
 
         {/* ================= TREE CANVAS ================= */}
-        <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-3 md:p-6 relative min-h-[320px] md:min-h-[520px] overflow-hidden flex items-center justify-center">
+        <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-3 md:p-6 relative min-h-[420px] md:min-h-[520px] overflow-hidden flex items-center justify-center">
           <div className="absolute top-0 left-1/4 w-64 h-64 bg-tree/5 rounded-full blur-[100px]" />
           <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-tree/3 rounded-full blur-[80px]" />
 
-          <div className="relative z-10 w-full h-full">
+          <div className="relative z-10 w-full h-full pt-12 md:pt-0">
             <TreeCanvas
               tree={displayTree}
               highlighted={highlighted}
               completed={completed}
               comparing={comparing}
               swapping={swapping}
-              width={1000}
-              height={600}
+              width={isMobile ? 760 : 1000}
+              height={isMobile ? 680 : 600}
             />
           </div>
           {/* ✅ QUIZ TOGGLE OVERLAY */}
-          <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+          <div className="absolute top-3 left-3 right-3 md:top-4 md:right-4 md:left-auto z-20 flex flex-wrap justify-between md:justify-end items-start gap-2">
             <QuizToggle
               active={quizActive}
               onToggle={() => setQuizActive(prev => !prev)}
@@ -337,7 +339,7 @@ const TreePage = () => {
               accent="tree"
             />
             {/* ✅ QUIZ CARD OVERLAY */}
-            {quizActive && activeQuestion && (
+            {!isMobile && quizActive && activeQuestion && (
               <QuizCard
                 question={activeQuestion}
                 onAnswer={(correct) => {
@@ -352,7 +354,7 @@ const TreePage = () => {
               !isRunning &&
               !currentQuestion &&
               quizTotal > 0 && (
-                <div className="absolute top-16 right-4 w-[260px] z-20">
+                <div className="w-full md:w-[260px] md:absolute md:top-16 md:right-4 z-20">
                   <QuizSummary
                     score={quizScore}
                     total={quizTotal}
@@ -432,6 +434,21 @@ const TreePage = () => {
           ))}
 
         </div>
+
+        {/* Mobile Quiz Question Panel */}
+        {isMobile && quizActive && activeQuestion && (
+          <div className="rounded-xl border border-border bg-card p-3">
+            <QuizCard
+              question={activeQuestion}
+              onAnswer={(correct) => {
+                handleAnswer(correct);
+                setActiveQuestion(null);
+              }}
+              accent="tree"
+            />
+          </div>
+        )}
+
         {/* ================= LEFT CONTROLS ================= */}
         <div className="flex gap-4 flex-wrap">
 
